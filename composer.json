@@ -1,0 +1,22 @@
+{
+    "name":"proyecto/mvc",
+    "description": "",
+    "type": "project",
+    "authors": [
+        {
+            "name": "JCA",
+            "email": "yaneca81@gmail.com"
+        }
+    ],
+    "require": {
+        "intervention/image": "^2.5",
+        "phpmailer/phpmailer": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "MVC\\" : "./",
+            "Controllers\\" : "./controllers",
+            "Model\\" : "./models"
+        }
+    }
+}
