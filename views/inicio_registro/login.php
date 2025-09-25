@@ -13,7 +13,7 @@ if(empty($user) || empty($password)) {
         // Comparar usando password_verify
         if($us['email'] === $user && password_verify($password, $us['contrasenia_hash'])){
             $mensaje = "Acceso permitido. Bienvenido, {$us['nombre']} ";
-            $_SESSION['usuario'] = $user;
+            $_SESSION['usuario'] = $us['id'];
             $valido = true;
             break;
         }

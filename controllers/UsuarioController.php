@@ -10,6 +10,13 @@ class UsuarioController{
             'usuarios' => $usuarios
         ]);
     }
+    public static function Home(Router $router){
+    
+        $usuarios = Usuario::listar();
+        $router->render('usuario/home',[
+            'usuarios' => $usuarios
+        ]);
+    }
 }
 
 ?>

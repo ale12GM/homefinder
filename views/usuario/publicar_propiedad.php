@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Variables de error inicializadas vacías
 $error_titulo        = "";
 $error_n_catastral   = "";
@@ -172,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php endif; ?>        
       <div>
           <label class="block text-sm font-medium text-gray-700">Nº Catastral:</label>
-          <input type="text" name="propiedades[n_catastral]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <input type="text" name="n_catastral" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         </div>
       </div>
 
@@ -180,14 +181,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Dirección:</label>
-          <input type="text" name="direccion" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <input type="text" name="propiedades[direccion]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         </div>
+        
         <?php if (!empty($error_direccion)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_direccion; ?></p>
         <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Superficie:</label>
-          <input type="text" name="superficie" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <input type="text" name="propiedades[superficie]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         </div>
         <?php if (!empty($error_superficie)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_superficie; ?></p>
@@ -198,14 +200,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Latitud:</label>
-          <input type="text" name="latitud" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <input type="text" name="propiedades[latitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
         </div>
         <?php if (!empty($error_latitud)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
         <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Longitud:</label>
-          <input type="text" name="longitud" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <input type="text" name="propiedades[longitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
         </div>
       </div>
       <?php if (!empty($error_longitud)): ?>
@@ -216,14 +218,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Número de Habitaciones:</label>
-          <input type="number" name="habitaciones" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <input type="number" name="propiedades[num_habitaciones]" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
         </div>
         <?php if (!empty($error_habitaciones)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
         <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Número de Baños:</label>
-          <input type="number" name="banos" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <input type="number" name="propiedades[num_banos]" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
         </div>
         <?php if (!empty($error_banos)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_banos; ?></p>
