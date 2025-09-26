@@ -243,21 +243,54 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-auto">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="text-center md:text-left mb-4 md:mb-0">
-                    <p>&copy; 2025 Mi Empresa. Todos los derechos reservados.</p>
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Facebook</a>
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Twitter</a>
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Instagram</a>
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">LinkedIn</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+<footer class="bg-[#535E46] text-[#FEFAE0] py-12 px-8 mt-16 font-[Poppins]">
+  <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+    
+    <!-- Logo -->
+    <div class="flex items-center justify-center md:justify-start gap-3">
+      <img src="image_logo.png" alt="Logo" class="max-w-full max-h-full w-16 h-16 object-contain">
+    </div>
+
+    <!-- Contenido -->
+    <div class="text-center md:text-left">
+      <h3 class="font-bold mb-4 text-[#FEFAE0]">Contenido</h3>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:text-white transition">Inicio</a></li>
+        <li><a href="#" class="hover:text-white transition">Sobre Nosotros</a></li>
+        <li><a href="#" class="hover:text-white transition">Contacto</a></li>
+        <li><a href="#" class="hover:text-white transition">Vender</a></li>
+        <li><a href="#" class="hover:text-white transition">Comprar</a></li>
+      </ul>
+    </div>
+
+    <!-- Síguenos -->
+    <div class="text-center md:text-left">
+      <h3 class="font-bold mb-4 text-[#FEFAE0]">Síguenos</h3>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:text-white transition">Facebook</a></li>
+        <li><a href="#" class="hover:text-white transition">Instagram</a></li>
+        <li><a href="#" class="hover:text-white transition">X</a></li>
+        <li><a href="#" class="hover:text-white transition">TikTok</a></li>
+      </ul>
+    </div>
+
+    <!-- Contáctanos -->
+    <div class="text-center md:text-left">
+      <h3 class="font-bold mb-4 text-[#FEFAE0]">Contáctanos</h3>
+      <ul class="space-y-2">
+        <li>+56 9 6027 0920</li>
+        <li><a href="mailto:ejempl@gmail.com" class="hover:text-white transition">ejempl@gmail.com</a></li>
+        <li>B/12ejemplo</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Derechos -->
+  <div class="mt-10 text-center text-sm text-[#FEFAE0]/70 border-t border-[#FEFAE0]/20 pt-6">
+    © 2025 Home Finder — Todos los derechos reservados.
+  </div>
+</footer>
+
 
     <script>
         // Toggle the menu visibility when the hamburger button is clicked

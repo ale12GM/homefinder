@@ -157,8 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </style>
 </head>
-<body class="bg-gray-100 p-6">
-
+<body class="bg-gray-100">
+<div class="py-[50px]">
   <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
     <h2 class="text-xl font-semibold text-[#DDA15E] mb-6">Tu Espacio de Publicación</h2>
     
@@ -290,6 +290,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </form>
   </div>
-
+</div>
 </body>
 </html>
