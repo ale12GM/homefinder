@@ -29,15 +29,16 @@ class ActivaModelo{
     $resultado = self::$db->query($query);
     return $resultado;
     }
-    public  function pasar ()//separa el key y value
+     public function pasar()
     {
-        $atributos=$this;
-        $resultado=[];
-        foreach($atributos as $key =>$value) 
-        {
-            $resultado[$key]=self::$db->escape_string($value);
+        $resultado = [];
+        foreach(static::$columnDB as $columna) {
+            if(isset($this->$columna) && $this->$columna !== null){
+                $resultado[$columna] = self::$db->escape_string($this->$columna);
+            }
         }
         return $resultado;
     }
+
 }
 ?>
