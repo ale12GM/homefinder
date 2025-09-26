@@ -6,7 +6,7 @@ class UsuarioController{
     public static function Index(Router $router){
     
         $usuarios = Usuario::listar();
-        $router->render('inicio_registro/login',[
+        $router->render('auth/login',[
             'usuarios' => $usuarios
         ]);
     }

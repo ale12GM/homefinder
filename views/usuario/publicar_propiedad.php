@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 // Variables de error inicializadas vacías
 $error_titulo        = "";
 $error_n_catastral   = "";
@@ -16,20 +17,20 @@ $error_imagen        = "";
 $error_etiquetas     = "";
 
 // Inicializar variables de formulario
-$id_usuario    = $_POST['id_usuario'] ?? 0; 
-$titulo        = trim($_POST['titulo'] ?? '');
-$n_catastral   = trim($_POST['n_catastral'] ?? ''); // <- la añadimos
-$direccion     = trim($_POST['direccion'] ?? '');
-$superficie    = trim($_POST['superficie'] ?? '');
-$latitud       = trim($_POST['latitud'] ?? '');
-$longitud      = trim($_POST['longitud'] ?? '');
-$habitaciones  = $_POST['habitaciones'] ?? null;
-$banos         = $_POST['banos'] ?? null;
-$precio        = trim($_POST['precio'] ?? '');
+$id_usuario    = $_POST['propiedades']['id_usuario'] ?? 0; 
+$titulo        = trim($_POST['propiedades']['titulo'] ?? '');
+$n_catastral   = trim($_POST['n_catastral'] ?? ''); // este no va a la BD
+$direccion     = trim($_POST['propiedades']['direccion'] ?? '');
+$superficie    = trim($_POST['propiedades']['superficie_total'] ?? '');
+$latitud       = trim($_POST['propiedades']['latitud'] ?? '');
+$longitud      = trim($_POST['propiedades']['longitud'] ?? '');
+$habitaciones  = $_POST['propiedades']['num_habitaciones'] ?? null;
+$banos         = $_POST['propiedades']['num_banos'] ?? null;
+$precio        = trim($_POST['propiedades']['precio'] ?? '');
 $descripcion   = trim($_POST['descripcion'] ?? '');
-$estado        = trim($_POST['estado'] ?? ''); // <- la añadimos
-$etiqueta_id   = $_POST['etiquetas'] ?? null;  // <- la añadimos
-$imagen_file   = $_FILES['imagen'] ?? null;    // <- la añadimos
+$estado        = trim($_POST['propiedades']['estado'] ?? ''); 
+$etiqueta_id   = $_POST['etiquetas'] ?? null;  
+$imagen_file   = $_FILES['imagen'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -43,10 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Nº Catastral (opcional, solo longitud)
-    if ($n_catastral !== '' && mb_strlen($n_catastral) > 100) {
-        $error_n_catastral = "Número catastral muy largo.";
-    }
-
+    if ($n_catastral === '') {
+    $error_n_catastral = "El Nº Catastral es obligatorio.";
+} elseif (mb_strlen($n_catastral) > 100) {
+    $error_n_catastral = "Número catastral muy largo.";
+}
     // Dirección
     if ($direccion === '') {
         $error_direccion = "La dirección es obligatoria.";
@@ -161,6 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2 class="text-xl font-semibold text-[#DDA15E] mb-6">Tu Espacio de Publicación</h2>
     
     <form action="#" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <input type="hidden" name="propiedades[id_usuario]" value="<?php echo $_SESSION['id'] ?? 0; ?>">
+      <input type="hidden" name="propiedades[fecha_publicacion]" value="<?php echo date('Y-m-d H:i:s'); ?>">
+      <input type="hidden" name="propiedades[fecha_actualizacion]" value="">
+      <input type="hidden" name="propiedades[estado]" value="activo">
 
       <!-- Primera fila: Título y Nº Catastral -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -189,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Superficie:</label>
-          <input type="text" name="propiedades[superficie]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <input type="text" name="propiedades[superficie_total]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         </div>
         <?php if (!empty($error_superficie)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_superficie; ?></p>
@@ -236,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Precio:</label>
-          <input type="text" name="precio" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <input type="text" name="propiedades[precio]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         </div>
         <?php if (!empty($error_precio)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_precio; ?></p>
@@ -244,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
           <label class="block text-sm font-medium text-gray-700">Etiquetas:</label>
           <select name="etiquetas" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required>
-            <option value="">Selecciona una etiqueta</option>
+            
             <?php foreach($etiquetas as $e): ?>
               <option value="<?php echo $e['id']; ?>"><?php echo $e['nombre']; ?></option>
             <?php endforeach; ?>
@@ -258,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Descripción -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Descripción:</label>
-        <textarea name="descripcion" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required></textarea>
+        <textarea name="propiedades[descripcion]" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required></textarea>
       </div>
         <?php if (!empty($error_descripcion)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_descripcion; ?></p>
@@ -269,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-400">
           <p class="mb-2">Arrastra y suelta las fotos aquí</p>
           <p class="text-xs mb-3">o haz clic para seleccionar archivos</p>
-          <input type="file" name="imagen" class="hidden" id="fileInput">
+          <input type="file" name="propiedades[imagen]" class="hidden" id="fileInput">
           <button type="button" onclick="document.getElementById('fileInput').click()" class="bg-[#DDA15E] text-white px-4 py-2 rounded-md text-sm">Seleccionar una imagen</button>
         </div>
       </div>

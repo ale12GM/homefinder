@@ -2,10 +2,12 @@
 namespace Controllers;
 use Model\Propiedad;
 use MVC\Router;
+use Model\Etiqueta;
 class PropiedadController{
     public static function IndexPropiedad(Router $router){
     
         $propiedades = Propiedad::listar();
+        
         $router->render('usuario/venta',[
             'propiedades' => $propiedades
         ]);
@@ -13,6 +15,8 @@ class PropiedadController{
     
     public static function Crear(Router $router){
         $propiedades = new Propiedad();
+        $etiquetas = Etiqueta::listar();
+
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $propiedades = new Propiedad($_POST['propiedades']);
             $nombre_imagen = $_FILES['propiedades']['name']['imagen'];
@@ -25,12 +29,13 @@ move_uploaded_file(
         $resultado = $propiedades->crear();
         if($resultado){
             echo "Se insertó los datos";
-            header('Location: /login/venta');
+            header('Location: /usuario/propiedades');
             exit;
         }
    }
    $router->render('usuario/publicar_propiedad',[
-    'propiedades'=> $propiedades
+    'propiedades'=> $propiedades,
+    'etiquetas'=>$etiquetas
     ]);
 }
 }
