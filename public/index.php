@@ -17,8 +17,11 @@ $router->get('/usuario/propiedades', [PropiedadController::class, 'IndexPropieda
 $router->post('/usuario/propiedades/publicar', [PropiedadController::class, 'Crear']);
 $router->get('/usuario/propiedades/publicar', [PropiedadController::class, 'Crear']);
 
+
 $router->get('/usuario/home', [UsuarioController::class, 'Home']);
 $router->post('/usuario/home', [UsuarioController::class, 'Home']);
+
+
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 
