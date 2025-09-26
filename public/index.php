@@ -10,20 +10,20 @@ $router=new Router();
 $router->post('/login', [UsuarioController::class, 'Index']);
 $router->get('/login', [UsuarioController::class, 'Index']);
 
-$router->post('/login/venta', [PropiedadController::class, 'IndexPropiedad']);
-$router->get('/login/venta', [PropiedadController::class, 'IndexPropiedad']);
+$router->post('/usuario/propiedades', [PropiedadController::class, 'IndexPropiedad']);
+$router->get('/usuario/propiedades', [PropiedadController::class, 'IndexPropiedad']);
 
-$router->post('/login/publicar_propiedad', [PropiedadController::class, 'Crear']);
-$router->get('/login/publicar_propiedad', [PropiedadController::class, 'Crear']);
+$router->post('/usuario/propiedades/publicar', [PropiedadController::class, 'Crear']);
+$router->get('/usuario/propiedades/publicar', [PropiedadController::class, 'Crear']);
 
-$router->post('/login/publicar_propiedad', [EtiquetaController::class, 'IndexEtiqueta']);
-$router->get('/login/publicar_propiedad', [EtiquetaController::class, 'IndexEtiqueta']);
+$router->post('/usuario/propiedades/publicar', [EtiquetaController::class, 'IndexEtiqueta']);
+$router->get('/usuario/propiedades/publicar', [EtiquetaController::class, 'IndexEtiqueta']);
 
-$router->post('/login/publicar_propiedad', [PropiedadEtiquetaController::class, 'IndexPropiedadEtiqueta']);
-$router->get('/login/publicar_propiedad', [PropiedadEtiquetaController::class, 'IndexPropiedadEtiqueta']);
+$router->post('/usuario/propiedades/publicar', [PropiedadEtiquetaController::class, 'IndexPropiedadEtiqueta']);
+$router->get('/usuario/propiedades/publicar', [PropiedadEtiquetaController::class, 'IndexPropiedadEtiqueta']);
 
-$router->get('/home', [UsuarioController::class, 'Home']);
-$router->post('/home', [UsuarioController::class, 'Home']);
+$router->get('/usuario/home', [UsuarioController::class, 'Home']);
+$router->post('/usuario/home', [UsuarioController::class, 'Home']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 
