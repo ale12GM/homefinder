@@ -1,3 +1,15 @@
+<?php 
+if(session_status() == PHP_SESSION_NONE){
+  session_start();
+}
+if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
+
+  session_destroy();
+  header('Location:/login');
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +47,7 @@
   </ul>
 
   <div class="mt-6 md:mt-0 flex gap-4 md:ml-8">
-    <?php if (!isset($_SESSION["email"])): ?>
+    <?php if (!isset($_SESSION['usuario'])): ?>
       <!-- Mostrar solo si NO hay sesión iniciada -->
       <a href="/singUp" class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-500 text-gray-600 hover:bg-gray-100">
         Sign up
@@ -92,10 +104,13 @@
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
          Ver Propiedades
       </a>
-      <a href="/login" 
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-red-700 transition font-semibold">
-         Cerrar Sesión
-      </a>
+     <form action="" method="post">
+    <?php echo $_SESSION['usuario']?>
+    <input type="hidden" name="cerrar">
+    <button type="submit" class="bg-red-500 hover:bg-red-800 px-4 py-2 rounded-md text-white">
+      Cerrar Secion
+    </button>
+  </form>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <?php
-// Suponiendo que $errores ya viene definido desde tu lógica PHP
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
