@@ -88,7 +88,7 @@
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
          Seguridad
       </a>
-      <a href="/propiedades" 
+      <a href="/usuario/mispropiedades" 
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
          Ver Propiedades
       </a>

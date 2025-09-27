@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // Variables de error inicializadas vacías
 $error_titulo        = "";
 $error_n_catastral   = "";

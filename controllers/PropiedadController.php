@@ -12,7 +12,19 @@ class PropiedadController{
             'propiedades' => $propiedades
         ]);
     }
-    
+    public static function MisPropiedades(Router $router) {
+    if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+    }
+    $usuarioId = $_SESSION['id'];
+
+    $propiedades = Propiedad::where('id_usuario', $usuarioId);
+
+    $router->render('usuario/ver_propiedades_propias', [
+        'propiedades' => $propiedades
+    ]);
+    }
+
     public static function Crear(Router $router){
         $propiedades = new Propiedad();
         $etiquetas = Etiqueta::listar();

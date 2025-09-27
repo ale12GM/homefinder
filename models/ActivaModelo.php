@@ -39,6 +39,20 @@ class ActivaModelo{
         }
         return $resultado;
     }
+    public static function where(string $columna, string|int $valor) {
+    $columna = self::$db->escape_string($columna);
+    $valor = self::$db->escape_string($valor);
+
+    $query = "SELECT * FROM " . static::$tabla . " WHERE {$columna} = '{$valor}'";
+    $resultado = self::$db->query($query);
+
+    $registros = [];
+    if ($resultado) {
+        $registros = $resultado->fetch_all(MYSQLI_ASSOC);
+    }
+
+    return $registros;
+}
 
 }
 ?>

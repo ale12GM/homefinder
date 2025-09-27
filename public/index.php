@@ -6,6 +6,7 @@ use Controllers\UsuarioController;
 use Controllers\EtiquetaController;
 use Controllers\LoginController;
 use Controllers\PropiedadEtiquetaController;
+use Model\Propiedad;
 use Model\Usuario;
 $router=new Router();   
 $router->post('/login', [LoginController::class, 'login']);
@@ -23,6 +24,9 @@ $router->post('/usuario/home', [UsuarioController::class, 'Home']);
 
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
+
+$router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
+$router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 

@@ -1,8 +1,6 @@
-  <?php 
+  <?php
   session_start();
-  $_SESSION["email"] = "ale@gmail.com";
   ?>
-
   <!DOCTYPE html>
   <html lang="es">
   <head>
