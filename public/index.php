@@ -21,6 +21,9 @@ $router->get('/usuario/propiedades/publicar', [PropiedadController::class, 'Crea
 $router->get('/usuario/home', [UsuarioController::class, 'Home']);
 $router->post('/usuario/home', [UsuarioController::class, 'Home']);
 
+$router->get('/admin_usuarios', [UsuarioController::class, 'Gestion']);
+$router->post('/admin_usuarios', [UsuarioController::class, 'Gestion']);
+
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
