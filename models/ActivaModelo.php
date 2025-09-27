@@ -18,6 +18,17 @@ class ActivaModelo{
         }
         return $producto;
     }
+    public static function obtener($id){
+        $id = self::$db->escape_string($id);
+        $query = "Select * from ".static::$tabla." WHERE id = '{$id}' LIMIT 1";
+        $resultado = self::$db->query($query);
+
+        if($resultado && $resultado->num_rows > 0){
+            return $resultado->fetch_assoc();
+        }
+        return null;
+    }
+
     public function crear()
     {
        $atributos = $this->pasar();
@@ -39,6 +50,25 @@ class ActivaModelo{
         }
         return $resultado;
     }
+
+    public function actualizar($id){
+        $atributos = $this->pasar();
+        $valores = [];
+
+        foreach($atributos as $columna => $valor){
+            if($columna === 'id') continue;
+            $valores[] = "{$columna} = '{$valor}'";
+        }
+
+        if(empty($valores)) return false; // nada que actualizar
+
+        $query = "UPDATE ".static::$tabla." SET ";
+        $query .= join(", ", $valores);
+        $query .= " WHERE id = '".self::$db->escape_string($id)."' LIMIT 1";
+
+        return self::$db->query($query);
+    }
+
     public static function where(string $columna, string|int $valor) {
     $columna = self::$db->escape_string($columna);
     $valor = self::$db->escape_string($valor);

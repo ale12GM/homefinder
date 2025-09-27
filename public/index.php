@@ -28,6 +28,9 @@ $router->post('/admin_usuarios', [UsuarioController::class, 'Gestion']);
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
 
+$router->get('/usuarios/obtener', [UsuarioController::class, 'Obtener']);
+$router->post('/usuarios/actualizar', [UsuarioController::class, 'Actualizar']);
+
 $router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 $router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);

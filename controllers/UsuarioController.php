@@ -32,6 +32,62 @@ class UsuarioController{
         ]);
     }
 
+    // dentro de class UsuarioController { ... }
+
+    public static function Obtener() {
+        header('Content-Type: application/json; charset=utf-8');
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'error' => 'id requerido']);
+            exit;
+        }
+
+        $usuario = Usuario::obtener($id);
+
+        if ($usuario) {
+            echo json_encode(['success' => true, 'usuario' => $usuario]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Usuario no encontrado']);
+        }
+        exit;
+    }
+
+
+    public static function Actualizar() {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'error' => 'Método no permitido']);
+            exit;
+        }
+
+        $id = $_POST['id'] ?? null;
+        $nombre = trim($_POST['nombre'] ?? '');
+        $apellido = trim($_POST['apellido'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+
+        if (!$id || $nombre === '' || $apellido === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'error' => 'Datos inválidos']);
+            exit;
+        }
+
+        $usuario = new Usuario([
+            'id' => $id,
+            'nombre' => $nombre,
+            'apellido' => $apellido,
+            'email' => $email
+        ]);
+
+        $resultado = $usuario->actualizar($id);
+
+        echo json_encode([
+            'success' => $resultado ? true : false,
+            'message' => $resultado ? 'Usuario actualizado' : 'No se pudo actualizar'
+        ]);
+        exit;
+    }
+
     public static function hashPassword(string $password): string {
         return password_hash($password, PASSWORD_DEFAULT);
     }
@@ -101,7 +157,7 @@ class UsuarioController{
         'usuarios'=> $Usuario,
         'errores' => $errores
     ]);
-
+    
     
 }
 }

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gestión de Usuarios</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Importamos la fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Poppins';
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
   </style>
 </head>
@@ -35,41 +35,44 @@
           <?php if (!empty($usuarios)): ?>
             <?php foreach ($usuarios as $u): ?>
               <tr class="text-sm border-b">
-                <td class="px-4 py-2"><?php echo $u['nombre'];?></td>
-                <td class="px-4 py-2"><?php echo $u ['apellido'];?></td>
-                <td class="px-4 py-2"><?php echo $u ['email'];?></td>
+                <!-- celdas con id para actualizarlas desde JS -->
+                <td id="nombre-<?= htmlspecialchars($u['id']) ?>" class="px-4 py-2"><?php echo htmlspecialchars($u['nombre']); ?></td>
+                <td id="apellido-<?= htmlspecialchars($u['id']) ?>" class="px-4 py-2"><?php echo htmlspecialchars($u['apellido']); ?></td>
+                <td id="email-<?= htmlspecialchars($u['id']) ?>" class="px-4 py-2"><?php echo htmlspecialchars($u['email']); ?></td>
+
                 <?php if($u['estado'] == 1): ?>
-                  <td class="px-4 py-2"> Activo </td>
+                  <td class="px-4 py-2">Activo</td>
                 <?php else: ?>
-                  <td class="px-4 py-2"> Inactivo </td>
+                  <td class="px-4 py-2">Inactivo</td>
                 <?php endif; ?>
+
                 <td class="px-4 py-2 flex items-center gap-2 relative">
                   <!-- Botón directo para restaurar contraseña -->
-                  <a href="/usuarios/resetear?id=<?= $u['id'] ?>" 
-                      class="px-2 py-1 text-sm bg-[#E2E4E0] border border-[#283618] rounded hover:bg-gray-200">
-                      🔑 Restaurar contraseña
+                  <a href="/usuarios/resetear?id=<?= htmlspecialchars($u['id']) ?>"
+                     class="px-2 py-1 text-sm bg-[#E2E4E0] border border-[#283618] rounded hover:bg-gray-200">
+                    🔑 Restaurar contraseña
                   </a>
 
                   <!-- Botón menú -->
-                  <button onclick="toggleMenu(<?= $u['id'] ?>)" 
+                  <button onclick="toggleMenu(<?= htmlspecialchars($u['id']) ?>)"
                           class="p-2 rounded-full hover:bg-gray-200">⋮</button>
 
                   <!-- Menú desplegable -->
-                  <div id="menu-<?= $u['id'] ?>" 
-                        class="hidden absolute right-0 mt-10 w-40 bg-white border rounded-md shadow-lg z-10">
+                  <div id="menu-<?= htmlspecialchars($u['id']) ?>"
+                       class="hidden absolute right-0 mt-10 w-40 bg-white border rounded-md shadow-lg z-10">
                     <ul class="py-1 text-sm">
                       <li>
-                        <a href="/usuarios/editar?id=<?= $u['id'] ?>" 
-                            class="block px-4 py-2 hover:bg-gray-100">✏️ Editar</a>
+                        <!-- EDITAR ahora abre modal -->
+                        <button onclick="openEditModal(<?= htmlspecialchars($u['id']) ?>)"
+                                class="w-full text-left px-4 py-2 hover:bg-gray-100">✏️ Editar</button>
                       </li>
                       <li>
-                        <a href="/usuarios/bloquear?id=<?= $u['id'] ?>" 
-                            class="block px-4 py-2 text-red-600 hover:bg-gray-100">🚫 Bloquear</a>
+                        <a href="/usuarios/bloquear?id=<?= htmlspecialchars($u['id']) ?>"
+                           class="block px-4 py-2 text-red-600 hover:bg-gray-100">🚫 Bloquear</a>
                       </li>
                     </ul>
                   </div>
                 </td>
-
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
@@ -82,86 +85,148 @@
     </div>
   </div>
 
+  <!-- Modal editar (oculto por defecto) -->
+  <div id="modal-editar" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div class="bg-white rounded-xl w-11/12 max-w-md p-6 mx-auto">
+      <h3 class="text-lg font-semibold mb-4">Editar Usuario</h3>
+
+      <form id="form-editar" class="space-y-3">
+        <input type="hidden" name="id" id="editar-id">
+
+        <div>
+          <label class="block text-sm">Nombre</label>
+          <input id="editar-nombre" name="nombre" type="text" class="w-full border rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm">Apellido</label>
+          <input id="editar-apellido" name="apellido" type="text" class="w-full border rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm">Email</label>
+          <input id="editar-email" name="email" type="email" class="w-full border rounded px-3 py-2" required>
+        </div>
+
+        <div id="editar-errores" class="text-red-600 text-sm"></div>
+
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 rounded border">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded bg-[#E2E4E0]">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    const usuariosPorPagina = 10;
-    let paginaActual = 1;
-
-    function mostrarUsuarios(pagina) {
-      const inicio = (pagina - 1) * usuariosPorPagina;
-      const fin = inicio + usuariosPorPagina;
-      const usuariosPagina = usuarios.slice(inicio, fin);
-
-      const tabla = document.getElementById("tablaUsuarios");
-      tabla.innerHTML = "";
-
-      usuariosPagina.forEach((u, idx) => {
-        const fila = `
-          <tr class="text-sm border-b">
-            <td class="px-4 py-2 flex items-center gap-2">
-              <input type="checkbox" class="w-4 h-4">
-              <span>${u.nombre}</span>
-            </td>
-            <td class="px-4 py-2">${u.rol}</td>
-            <td class="px-4 py-2">${u.estado}</td>
-            <td class="px-4 py-2 flex items-center gap-2 relative">
-              <!-- Botón directo para resetear contraseña -->
-              <button class="px-2 py-1 text-sm bg-[#E2E4E0] border border-[#283618] rounded hover:bg-gray-200">🔑 Restaurar contraseña</button>
-              
-              <!-- Botón menú -->
-              <button onclick="toggleMenu(${idx})" class="p-1 rounded-full hover:bg-gray-200">⋮</button>
-              <!-- Menú desplegable -->
-              <div id="menu-${idx}" class="hidden absolute right-0 mt-8 w-40 bg-white border rounded-md shadow-lg z-10">
-                <ul class="py-1 text-sm">
-                  <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">✏️ Editar</a></li>
-                  <li><a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-100">🚫 Bloquear</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>`;
-        tabla.insertAdjacentHTML("beforeend", fila);
-      });
-
-      document.getElementById("totalUsuarios").textContent = usuarios.length;
-      actualizarPaginacion();
-    }
-
+    // Abre/cierra menú desplegable (solo uno abierto a la vez)
     function toggleMenu(id) {
-      // Cierra otros menús
       document.querySelectorAll('[id^="menu-"]').forEach(el => el.classList.add("hidden"));
-      // Abre el correspondiente
-      document.getElementById(`menu-${id}`).classList.toggle("hidden");
+      const menu = document.getElementById(`menu-${id}`);
+      if (menu) menu.classList.toggle("hidden");
     }
 
     // Cerrar menús al hacer clic fuera
     document.addEventListener("click", (e) => {
+      // si el clic no está dentro de un td que contiene el menú, cerramos todos
       if (!e.target.closest("td")) {
         document.querySelectorAll('[id^="menu-"]').forEach(el => el.classList.add("hidden"));
       }
     });
 
+    // Abre modal y carga datos del usuario desde backend
+    function openEditModal(userId) {
+      fetch(`/usuarios/obtener?id=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.error || 'No se pudo obtener el usuario');
+            return;
+          }
+          const u = data.usuario;
+          document.getElementById('editar-id').value = u.id || '';
+          document.getElementById('editar-nombre').value = u.nombre || '';
+          document.getElementById('editar-apellido').value = u.apellido || '';
+          document.getElementById('editar-email').value = u.email || '';
 
-    function actualizarPaginacion() {
-      const totalPaginas = Math.ceil(usuarios.length / usuariosPorPagina);
-      const paginacion = document.getElementById("paginacion");
-      paginacion.innerHTML = "";
-
-      if (totalPaginas <= 1) return;
-
-      for (let i = 1; i <= totalPaginas; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = `px-3 py-1 rounded-full ${i === paginaActual ? "bg-[#E2E4E0] text-black" : "bg-gray-100 hover:bg-gray-200"}`;
-        btn.onclick = () => {
-          paginaActual = i;
-          mostrarUsuarios(paginaActual);
-        };
-        paginacion.appendChild(btn);
-      }
+          // mostrar modal
+          document.getElementById('modal-editar').classList.remove('hidden');
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Error al obtener datos del usuario');
+        });
     }
 
-    // Inicialización
-    mostrarUsuarios(paginaActual);
+    function closeModal() {
+      document.getElementById('modal-editar').classList.add('hidden');
+      document.getElementById('editar-errores').textContent = '';
+    }
 
+    // Envío del formulario por AJAX con validación simple
+    document.getElementById('form-editar').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const id = document.getElementById('editar-id').value;
+      const nombre = document.getElementById('editar-nombre').value.trim();
+      const apellido = document.getElementById('editar-apellido').value.trim();
+      const email = document.getElementById('editar-email').value.trim();
+
+      const errores = [];
+      if (!nombre) errores.push('El nombre no puede estar vacío');
+      if (!apellido) errores.push('El apellido no puede estar vacío');
+      if (!email) errores.push('El email no puede estar vacío');
+      // comprobación básica del email
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errores.push('El email no es válido');
+
+      const erroresDiv = document.getElementById('editar-errores');
+      if (errores.length) {
+        erroresDiv.innerHTML = errores.map(x => `<div>• ${x}</div>`).join('');
+        return;
+      } else {
+        erroresDiv.textContent = '';
+      }
+
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('nombre', nombre);
+      formData.append('apellido', apellido);
+      formData.append('email', email);
+
+      fetch('/usuarios/actualizar', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          // actualizar la fila en la tabla sin recargar
+          const nombreTd = document.getElementById(`nombre-${id}`);
+          const apellidoTd = document.getElementById(`apellido-${id}`);
+          const emailTd = document.getElementById(`email-${id}`);
+          if (nombreTd) nombreTd.textContent = nombre;
+          if (apellidoTd) apellidoTd.textContent = apellido;
+          if (emailTd) emailTd.textContent = email;
+
+          closeModal();
+          // pequeño aviso
+          alert('Usuario actualizado correctamente');
+        } else {
+          // mostrar errores del servidor
+          if (json.errors) {
+            erroresDiv.innerHTML = json.errors.map(x => `<div>• ${x}</div>`).join('');
+          } else if (json.error) {
+            erroresDiv.textContent = json.error;
+          } else {
+            erroresDiv.textContent = 'Error desconocido';
+          }
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        erroresDiv.textContent = 'Error al conectarse con el servidor';
+      });
+    });
   </script>
 
 </body>
