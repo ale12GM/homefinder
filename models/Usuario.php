@@ -12,6 +12,7 @@ class Usuario extends ActivaModelo {
     public $email;
     public $password;
     public $autenticado=false;
+    public $estado;
     protected static $errores=[];
 
     public function __construct($args = []) {
@@ -20,6 +21,7 @@ class Usuario extends ActivaModelo {
         $this->apellido = $args['apellido'] ?? null;
         $this->email = $args['email'] ?? null;
         $this->password = $args['password'] ?? null;
+        $this->estado = $args['estado'] ?? null;
     }
     public function validar(){
         if(!$this->email){
