@@ -107,7 +107,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
      <form action="" method="post">
     <?php echo $_SESSION['usuario']?>
     <input type="hidden" name="cerrar">
-    <button type="submit" class="bg-red-500 hover:bg-red-800 px-4 py-2 rounded-md text-white">
+    <button type="submit" class="block w-full text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition mt-4">
       Cerrar Secion
     </button>
   </form>

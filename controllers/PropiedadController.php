@@ -29,7 +29,7 @@ class PropiedadController{
         $propiedades = new Propiedad();
         $etiquetas = Etiqueta::listar();
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['usuario'])){
             $propiedades = new Propiedad($_POST['propiedades']);
             $nombre_imagen = $_FILES['propiedades']['name']['imagen'];
 $ubicacion = __DIR__ . '/../public/img/' . $nombre_imagen;
