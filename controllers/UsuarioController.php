@@ -27,7 +27,7 @@ class UsuarioController{
 
     public static function Gestion(Router $router){
         $usuarios = Usuario::listar();
-        $router->render('usuario/admin_usuarios', [
+        $router->render('admin/gestion_de_usuarios', [
             'usuarios' => $usuarios
         ]);
     }
