@@ -8,6 +8,7 @@ use Controllers\LoginController;
 use Controllers\PropiedadEtiquetaController;
 use Model\Propiedad;
 use Model\Usuario;
+use Controllers\RolController;
 $router=new Router();   
 $router->post('/login', [LoginController::class, 'login']);
 $router->get('/login', [LoginController::class, 'login']);
@@ -22,8 +23,11 @@ $router->get('/usuario/propiedades/publicar', [PropiedadController::class, 'Crea
 $router->get('/usuario/home', [UsuarioController::class, 'Home']);
 $router->post('/usuario/home', [UsuarioController::class, 'Home']);
 
-$router->get('/admin_usuarios', [UsuarioController::class, 'Gestion']);
-$router->post('/admin_usuarios', [UsuarioController::class, 'Gestion']);
+$router->get('/admin/usuarios', [UsuarioController::class, 'Gestion']);
+$router->post('/admin/usuarios', [UsuarioController::class, 'Gestion']);
+
+$router->get('/admin/roles', [RolController::class, 'Gestion']);
+$router->post('/admin/roles', [RolController::class, 'Gestion']);
 
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
@@ -35,5 +39,8 @@ $router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropie
 $router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
+
+
+
 
 ?>

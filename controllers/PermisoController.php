@@ -1,12 +1,12 @@
 <?php
 namespace Controllers;
-use Model\Permisos;
+use Model\Permiso;
 use MVC\Router;
 class PermisoController{
-    public static function IndexPermiso(Router $router){
-        $contactos = Permisos::listar();
-        $router->render('usuario/permisos',[
-            'permisos' => $contactos
+    public static function IndexPermisos(Router $router){
+        $permisos = Permiso::listar();
+        $router->render('',[
+            'permisos' => $permisos
         ]);
     }
 }
