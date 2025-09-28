@@ -37,6 +37,8 @@ $router->post('/usuarios/actualizar', [UsuarioController::class, 'Actualizar']);
 
 $router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 $router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
+
+$router->get('/detalle-contacto',[PropiedadController::class, 'verDetalleContacto']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 

@@ -25,6 +25,23 @@ class PropiedadController{
     ]);
     }
 
+public static function verDetalleContacto(Router $router) {
+    
+    $id_propiedad = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+    
+    if (!$id_propiedad) {
+        
+        header('Location: /venta');
+        exit;
+    }
+    $contactos = Propiedad::findConContactos($id_propiedad);
+
+    $router->render('usuario/detalleContacto', [
+        'contactos' => $contactos,
+        'id_propiedad' => $id_propiedad
+    ]);
+}
+
     public static function Crear(Router $router){
         $propiedades = new Propiedad();
         $etiquetas = Etiqueta::listar();

@@ -9,5 +9,6 @@ class ContactosController{
             'contacto' => $contactos
         ]);
     }
+    
 }
 ?>
