@@ -12,7 +12,7 @@
 
 <body class="bg-[#FEFAE0]  min-h-screen">
     
-   
+
   <div class="flex w-screen h-screen shadow-lg overflow-hidden">
     
     <!-- Formulario Izquierda -->

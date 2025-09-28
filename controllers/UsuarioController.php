@@ -164,8 +164,46 @@ class UsuarioController{
         'errores' => $errores
     ]);
     
-    
-}
+    }
+
+        public static function RestablecerContrasena(Router $router) {
+        $errores = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $password = $_POST['password'] ?? '';
+            $confirm  = $_POST['confirm_password'] ?? '';
+            $id       = $_POST['id'] ?? null; // podrías pasarlo por hidden input
+
+            if (empty($password) || empty($confirm)) {
+                $errores[] = "Todos los campos son obligatorios";
+            } elseif ($password !== $confirm) {
+                $errores[] = "Las contraseñas no coinciden";
+            } elseif (strlen($password) < 0) {
+                $errores[] = "La contraseña debe tener al menos 8 caracteres";
+            }
+
+            if (empty($errores) && $id) {
+                $usuario = new Usuario([
+                    'id' => $id,
+                    'password' => password_hash($password, PASSWORD_DEFAULT)
+                ]);
+
+                $resultado = $usuario->actualizar($id);
+
+                if ($resultado) {
+                    header("Location: /login?msg=restablecido");
+                    exit;
+                } else {
+                    $errores[] = "No se pudo actualizar la contraseña";
+                }
+            }
+        }
+
+        $router->render('auth/restablecer', [
+            'errores' => $errores
+        ]);
+    }
+
 }
 
 ?>
