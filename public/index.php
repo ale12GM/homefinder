@@ -29,6 +29,9 @@ $router->post('/admin/usuarios', [UsuarioController::class, 'Gestion']);
 $router->get('/admin/roles', [RolController::class, 'Gestion']);
 $router->post('/admin/roles', [RolController::class, 'Gestion']);
 
+$router->get('/admin/home', [UsuarioController::class, 'AdminHome']);
+$router->post('/admin/home', [UsuarioController::class, 'AdminHome']);
+
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
 
@@ -37,8 +40,6 @@ $router->post('/usuarios/actualizar', [UsuarioController::class, 'Actualizar']);
 
 $router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 $router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
-
-$router->get('/detalle-contacto',[PropiedadController::class, 'verDetalleContacto']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 

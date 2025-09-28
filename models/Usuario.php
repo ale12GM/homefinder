@@ -97,6 +97,13 @@ class Usuario extends ActivaModelo {
     {
         return static::$errores;
     }
+
+
+    public static function ultimos($cantidad = 2) {
+        $query = "SELECT * FROM " . static::$tabla . " ORDER BY id DESC LIMIT " . intval($cantidad);
+        $resultado = self::$db->query($query);
+        return $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
+    }
 }
 
 ?>

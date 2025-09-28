@@ -1,5 +1,7 @@
 <?php
 namespace Controllers;
+
+use Model\Propiedad;
 use Model\Usuario;
 use MVC\Router;
 class UsuarioController{
@@ -18,10 +20,14 @@ class UsuarioController{
         ]);
     }
     public static function AdminHome(Router $router){
+        $propiedades = Propiedad::listar();
+        $ultimosusuarios = Usuario::ultimos(2);
 
         $usuarios = Usuario::listar();
         $router->render('admin/home',[
-            'usuarios' => $usuarios
+            'usuarios' => $usuarios,
+            'propiedades' => $propiedades,
+            'ultimosUsuarios' => $ultimosusuarios
         ]);
     }
 
