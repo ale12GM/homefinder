@@ -1,11 +1,11 @@
 <?php
 namespace Controllers;
-use Model\NormativasContrasenias;
+use Model\NormativaContrasenia;
 use MVC\Router;
-class NormativasContraseniasController{
+class NormativaContraseniaController{
     public static function IndexEtiqueta(Router $router){
     
-        $normativascontrasenias = NormativasContrasenias::listar();
+        $normativascontrasenias = NormativaContrasenia::listar();
         $router->render('',[                    # Aqui va la ruta donde se mandara la informacion
             'normativascontrasenias' => $normativascontrasenias
         ]);
