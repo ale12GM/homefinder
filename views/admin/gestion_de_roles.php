@@ -23,6 +23,14 @@
   <div class="max-w-6xl mx-auto p-6">
     <h1 class="text-xl font-semibold">Gestión de Roles</h1>
     <p class="text-gray-500 text-sm mb-6">Maneja los roles de tu aplicación</p>
+    <a href="/admin/roles/crear"
+      class="mt-4 inline-block text-center bg-[#5B674D] text-white px-4 py-2 rounded-md hover:bg-[#c6924f] transition flex items-center justify-center gap-2">
+    
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Añadir
+    </a>
 
     <div class="overflow-x-auto bg-white rounded-xl shadow">
       <table class="min-w-full text-left border-separate border-spacing-y-2">
@@ -30,7 +38,7 @@
           <tr class="text-gray-600 text-sm">
             <th class="px-4 py-2 border-b border-gray-200">Nombre Rol</th>
             <th class="px-4 py-2 border-b border-gray-200">Descripción</th>
-            <th class="px-4 py-2 border-b border-gray-200">Estado</th>
+            <th class="px-4 py-2 border-b border-gray-200">Cuentas</th>
             <th class="px-4 py-2 border-b border-gray-200">Acciones</th>
           </tr>
         </thead>
@@ -45,11 +53,10 @@
                     <td id="descripcion-rol-<?= htmlspecialchars($r['id']) ?>" class="px-4 py-2 text-gray-600">
                         <?= htmlspecialchars($r['descripcion']); ?>
                     </td>
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full estado-activo">
-                            Activo
-                        </span>
+                    <td class="px-4 py-2 text-center font-medium text-gray-700">
+                        <?= htmlspecialchars($r['total_usuarios'] ?? 0); ?>
                     </td>
+                    
                     <td class="px-4 py-2 relative">
                         <div class="relative inline-block text-left">
                             <button onclick="toggleMenu(<?= htmlspecialchars($r['id']) ?>)"
@@ -60,17 +67,19 @@
                                 class="hidden origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                                 <ul class="py-1 text-sm">
                                     <li>
-                                        <button onclick="openEditModal(<?= htmlspecialchars($r['id']) ?>)"
+                                      <a href="/admin/roles/asignar-usuarios?id=<?= htmlspecialchars($r['id']) ?>"
+                                        class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Añadir Usuario
+                                      </a>
+                                    </li>
+                                    <li>
+                                        <a href="/admin/roles/editar?id=<?= htmlspecialchars($r['id']) ?>"
                                                 class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.38-2.827-2.828z"></path></svg>
                                             Editar
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <a href="#" onclick="alert('Funcionalidad de deshabilitar aún no implementada.')"
-                                           class="block px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                                            Deshabilitar
                                         </a>
                                     </li>
                                 </ul>

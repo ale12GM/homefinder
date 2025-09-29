@@ -97,6 +97,17 @@ class Usuario extends ActivaModelo {
     {
         return static::$errores;
     }
+
+    public static function listarEmail(){
+        $query = "SELECT id, email FROM " . static::$tabla;
+        $resultado = self::$db->query($query);
+        $usuarios =[];
+        if($resultado){
+            $usuarios = $resultado->fetch_all(MYSQLI_ASSOC);
+
+        }
+        return $usuarios;
+    }
 }
 
 ?>

@@ -25,7 +25,7 @@ class PropiedadController{
     ]);
     }
 
-public static function verDetalleContacto(Router $router) {
+public static function verDetalleContacto(Router $router) {//ojo
     
     $id_propiedad = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
     

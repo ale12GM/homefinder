@@ -39,6 +39,16 @@ $router->post('/usuario/mispropiedades', [PropiedadController::class, 'MisPropie
 $router->get('/usuario/mispropiedades', [PropiedadController::class, 'MisPropiedades']);
 
 $router->get('/detalle-contacto',[PropiedadController::class, 'verDetalleContacto']);
+
+$router->post('/admin/roles/crear', [RolController::class, 'CrearRol']);
+$router->get('/admin/roles/crear', [RolController::class, 'CrearRol']);
+
+$router->get('/admin/roles/asignar-usuarios', [RolController::class, 'asignarUsuarios']);
+
+$router->get('/admin/roles/editar', [RolController::class, 'editarRol']);
+$router->post('/admin/roles/editar', [RolController::class, 'editarRol']);
+
+$router->post('/admin/roles/asignar', [RolController::class, 'asignarRolAPI']);
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();
 
