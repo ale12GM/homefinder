@@ -2,7 +2,7 @@
 
 namespace Model;
 
-class NormativasContrasenias extends ActivaModelo {
+class NormativaContrasenia extends ActivaModelo {
     protected static $tabla = 'normativascontrasenias';
     protected static $columnDB = ['id','longitud_minima','longitud_maxima','requiere_mayusculas','requiere_minusculas','requiere_numeros','requiere_simbolos','cantidad_simbolos','caducidad_dias','intentos_maximos','es_activa','fecha_creacion'];
 

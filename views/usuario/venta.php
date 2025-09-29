@@ -66,9 +66,10 @@ session_start();
         <div class="border border-[#DDA15E] rounded-lg p-3 text-sm text-gray-700 space-y-1" id="modalCaracteristicas">
         </div>
       </div>
-      <button class="mt-4 bg-[#5B674D] text-white px-5 py-2 rounded-lg hover:bg-[#4a563e] transition">
-        Contactar
-      </button>
+      <a href="/detalle-contacto?id=<?php echo $p['id']; ?>"
+          class="mt-4 inline-block text-center bg-[#5B674D] text-white px-4 py-2 rounded-md hover:bg-[#c6924f] transition">
+          Contactar
+      </a>
     </div>
   </div>
 </div>

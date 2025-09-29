@@ -5,12 +5,13 @@ use Controllers\PropiedadController;
 use Controllers\UsuarioController;
 use Controllers\EtiquetaController;
 use Controllers\LoginController;
+use Controllers\PropiedadEtiquetaController;
+use Model\Propiedad;
+use Model\Usuario;
+use Controllers\RolController;
 use MVC\Router;
+$router=new Router(); 
 
-$router = new Router();
-
-// --- LOGIN ---
-$router->get('/login', [LoginController::class, 'login']);
 $router->post('/login', [LoginController::class, 'login']);
 
 // --- USUARIO PROPIEDADES ---
@@ -40,12 +41,20 @@ $router->post('/admin/propiedades/editar', [PropiedadController::class, 'EditarP
 $router->get('/usuario/home', [UsuarioController::class, 'Home']);
 $router->post('/usuario/home', [UsuarioController::class, 'Home']);
 
-$router->get('/admin_usuarios', [UsuarioController::class, 'Gestion']);
-$router->post('/admin_usuarios', [UsuarioController::class, 'Gestion']);
+$router->get('/admin/usuarios', [UsuarioController::class, 'Gestion']);
+$router->post('/admin/usuarios', [UsuarioController::class, 'Gestion']);
 
-// --- USUARIO ---
+$router->get('/admin/roles', [RolController::class, 'Gestion']);
+$router->post('/admin/roles', [RolController::class, 'Gestion']);
+
+$router->get('/admin/home', [UsuarioController::class, 'AdminHome']);
+$router->post('/admin/home', [UsuarioController::class, 'AdminHome']);
+
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
+
+$router->get('/usuario/restablecer', [UsuarioController::class, 'RestablecerContrasena']);
+$router->post('/usuario/restablecer', [UsuarioController::class, 'RestablecerContrasena']);
 
 $router->get('/usuarios/obtener', [UsuarioController::class, 'Obtener']);
 $router->post('/usuarios/actualizar', [UsuarioController::class, 'Actualizar']);
@@ -56,3 +65,8 @@ $router->get('/acceso_denegado', function() use ($router) {
 
 // --- COMPROBAR RUTAS ---
 $router->ComprobarRutas();
+
+
+
+
+?>

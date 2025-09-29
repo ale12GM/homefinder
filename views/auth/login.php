@@ -1,5 +1,6 @@
 <?php
-
+// No es necesario añadir lógica PHP aquí para el controlador
+// Solo se usa para renderizar el HTML y mostrar los datos pasados.
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -8,11 +9,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Finder - Iniciar sesión</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome para el icono del ojo, si no lo tienes ya -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<body class="bg-[#FEFAE0]  min-h-screen">
+<body class="bg-[#FEFAE0] min-h-screen">
     
-   
+
   <div class="flex w-screen h-screen shadow-lg overflow-hidden">
     
     <!-- Formulario Izquierda -->
@@ -39,7 +42,7 @@
             placeholder="Correo electrónico"
             class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#DDA15E]"
             required
-            value="<?php echo htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+            value="<?php echo htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8'); ?>"
           >
         </div>
 
