@@ -1,6 +1,4 @@
 <?php
-
-$permisos = $_SESSION['permisos'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,15 +22,15 @@ $permisos = $_SESSION['permisos'] ?? [];
     
     <!-- Encabezado -->
     <div class="mb-6">
-      <h1 class="text-xl font-semibold">Mis propiedades</h1><br>
-      <p class="text-sm text-gray-500">Maneja a tus propiedades y edita o eliminalas</p>
+      <h1 class="text-xl font-semibold">Gestión de propiedades</h1><br>
+      <p class="text-sm text-gray-500">Maneja las propiedades y edita o desactivalas.</p>
     </div>
 
     <!-- Barra superior -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
       <p class="text-sm">
         <span class="font-semibold">Todas las propiedades</span> 
-        <span class="text-gray-400 ml-2"><?php echo count($propiedades)?></span>
+        <span class="text-gray-400 ml-2"></span>
       </p>
 
       <div class="flex items-center gap-2 mt-2 sm:mt-0">
@@ -149,9 +147,9 @@ $permisos = $_SESSION['permisos'] ?? [];
                     ?>
                     
                     <?php if ($puedeEditar): ?>
-                      <a href="/usuario/propiedades/editar?id=<?= $uid ?>" 
-                        class="px-3 py-1 rounded-full border text-sm hover:bg-gray-100 transition">
-                          ✏️ Editar
+                      <a href="/admin/propiedades/editar?id=<?php echo $uid ?>" 
+                         class="px-3 py-1 rounded-full border text-sm hover:bg-gray-100 transition">
+                         ✏️ Editar
                       </a>
                     <?php endif; ?>
 
@@ -161,7 +159,6 @@ $permisos = $_SESSION['permisos'] ?? [];
                          🗑 Eliminar
                       </a>
                     <?php endif; ?>
-                  </div>
                   </div>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 
 namespace Model;
 
-class Denuncias extends ActivaModelo {
+class Denuncia extends ActivaModelo {
     protected static $tabla = 'denuncias';
     protected static $columnDB = ['id', 'id_propiedad', 'id_usuario', 'motivo', 'descripcion', 'fecha_denuncia', 'estado'];
     public $id ;

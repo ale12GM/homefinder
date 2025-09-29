@@ -1,10 +1,10 @@
 <?php
 namespace Controllers;
-use Model\Denuncias;
+use Model\Denuncia;
 use MVC\Router;
 class DenunciaController{
     public static function IndexDenuncias(Router $router){
-        $contactos = Denuncias::listar();
+        $contactos = Denuncia::listar();
         $router->render('usuario/denuncia',[
             'denuncia' => $contactos
         ]);
