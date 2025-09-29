@@ -6,20 +6,12 @@ class Rol extends ActivaModelo {
     protected static $tabla = 'roles';
     protected static $columnDB = ['id','nombre','descripcion'];
 
-<<<<<<< HEAD
-    public $nombre;
-    public $descripcion;
-
-
-    public function __construct($args = []) {
-=======
     public $id;
     public $nombre;
     public $descripcion;
 
     public function __construct($args = []) {
         $this->id = $args['id'] ?? null;
->>>>>>> 43078bdc83b766312e5309c6c7a3f6f76369fd2a
         $this->nombre = $args['nombre'] ?? null;
         $this->descripcion = $args['descripcion'] ?? null;
     }

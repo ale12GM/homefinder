@@ -21,22 +21,6 @@ class LoginController{
 
             $email_intentado = $postData['email'] ?? ''; // Guardamos el email para los errores y auditoría
 
-            // Verificar bloqueo por cookie primero
-            if (!empty($email_intentado)) {
-                $bloqueoCookie = Usuario::verificarCookieBloqueo($email_intentado);
-                if ($bloqueoCookie['bloqueada']) {
-                    $errores[] = $bloqueoCookie['mensaje'];
-                }
-            }
-
-            // Verificar bloqueo por intentos en base de datos
-            if (!empty($email_intentado) && empty($errores)) {
-                $bloqueoDB = Usuario::verificarBloqueo($email_intentado);
-                if ($bloqueoDB['bloqueada']) {
-                    $errores[] = $bloqueoDB['mensaje'];
-                }
-            }
-
             // Si no hay bloqueos, continuar con la validación normal
             if (empty($errores)) {
                 $auth = new Usuario($postData); // Creamos un objeto Usuario con los datos enviados

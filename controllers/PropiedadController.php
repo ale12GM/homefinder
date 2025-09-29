@@ -4,6 +4,7 @@ use Model\Propiedad;
 use MVC\Router;
 use Model\Etiqueta;
 use Model\Contacto;
+use Model\Contactos;
 class PropiedadController{
     public static function IndexPropiedad(Router $router){
     // Obtener todas las propiedades
@@ -55,24 +56,258 @@ public static function MisPropiedades(Router $router) {
     });
 
     $router->render('usuario/ver_propiedades_propias', [
-        'propiedades' => $propiedades
+        'propiedades' => $propiedadesActivas,
+        'permisos' => $permisosUsuario
     ]);
+}
+
+
+
+public static function Crear(Router $router){
+    if(session_status() === PHP_SESSION_NONE) session_start();
+    
+    $propiedades = new Propiedad();
+    $etiquetas = Etiqueta::listar();
+    
+    // Variables de error inicializadas vacías
+    $error_titulo        = "";
+    $error_direccion     = "";
+    $error_superficie    = "";
+    $error_latitud       = "";
+    $error_longitud      = "";
+    $error_habitaciones  = "";
+    $error_banos         = "";
+    $error_precio        = "";
+    $error_descripcion   = "";
+    $error_estado        = "";
+    $error_imagen        = "";
+    $error_etiquetas     = "";
+    $error_contactos     = "";
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        // Obtener datos del formulario
+        $titulo        = trim($_POST['propiedades']['titulo'] ?? '');
+        $direccion     = trim($_POST['propiedades']['direccion'] ?? '');
+        $superficie    = trim($_POST['propiedades']['superficie_total'] ?? '');
+        $latitud       = trim($_POST['propiedades']['latitud'] ?? '');
+        $longitud      = trim($_POST['propiedades']['longitud'] ?? '');
+        $habitaciones  = $_POST['propiedades']['num_habitaciones'] ?? null;
+        $banos         = $_POST['propiedades']['num_banos'] ?? null;
+        $precio        = trim($_POST['propiedades']['precio'] ?? '');
+        $descripcion   = trim($_POST['propiedades']['descripcion'] ?? '');
+        $estado        = trim($_POST['propiedades']['estado'] ?? '');
+        $etiquetas_ids = $_POST['etiquetas'] ?? [];
+        $contactos_data = $_POST['contactos'] ?? [];
+        $imagen_file   = $_FILES['propiedades'] ?? null;
+
+        // --- Validaciones obligatorias ---
+
+        // Título
+        if ($titulo === '') {
+            $error_titulo = "El título es obligatorio.";
+        } elseif (mb_strlen($titulo) > 50) {
+            $error_titulo = "El título no puede exceder 50 caracteres.";
+        }
+
+
+        // Dirección
+        if ($direccion === '') {
+            $error_direccion = "La dirección es obligatoria.";
+        } elseif (mb_strlen($direccion) > 255) {
+            $error_direccion = "La dirección no puede exceder 255 caracteres.";
+        }
+
+        // Superficie
+        if ($superficie === '') {
+            $error_superficie = "La superficie es obligatoria.";
+        } elseif (!is_numeric($superficie)) {
+            $error_superficie = "La superficie debe ser un número.";
+        } elseif ((float)$superficie < 0) {
+            $error_superficie = "La superficie no puede ser negativa.";
+        } else {
+            $superficie = number_format((float)$superficie, 2, '.', '');
+        }
+
+        // Latitud
+        if ($latitud !== '') {
+            if (!is_numeric($latitud)) {
+                $error_latitud = "La latitud debe ser numérica.";
+            } else {
+                $latitud = number_format((float)$latitud, 6, '.', '');
+            }
+        }
+
+        // Longitud
+        if ($longitud !== '') {
+            if (!is_numeric($longitud)) {
+                $error_longitud = "La longitud debe ser numérica.";
+            } else {
+                $longitud = number_format((float)$longitud, 6, '.', '');
+            }
+        }
+
+        // Habitaciones
+        if ($habitaciones !== null && $habitaciones !== '') {
+            if (filter_var($habitaciones, FILTER_VALIDATE_INT) === false) {
+                $error_habitaciones = "Número de habitaciones inválido.";
+            } elseif ((int)$habitaciones < 0) {
+                $error_habitaciones = "El número de habitaciones no puede ser negativo.";
+            } else {
+                $habitaciones = (int)$habitaciones;
+            }
+        } else {
+            $habitaciones = null;
+        }
+
+        // Baños
+        if ($banos !== null && $banos !== '') {
+            if (filter_var($banos, FILTER_VALIDATE_INT) === false) {
+                $error_banos = "Número de baños inválido.";
+            } elseif ((int)$banos < 0) {
+                $error_banos = "El número de baños no puede ser negativo.";
+            } else {
+                $banos = (int)$banos;
+            }
+        } else {
+            $banos = null;
+        }
+
+        // Precio
+        if ($precio === '') {
+            $error_precio = "El precio es obligatorio.";
+        } elseif (!is_numeric($precio)) {
+            $error_precio = "El precio debe ser un número.";
+        } elseif ((float)$precio < 0) {
+            $error_precio = "El precio no puede ser negativo.";
+        } else {
+            $precio = number_format((float)$precio, 2, '.', '');
+        }
+
+        // Descripción
+        if ($descripcion === '') {
+            $error_descripcion = "La descripción es obligatoria.";
+        } elseif (mb_strlen($descripcion) > 500) {
+            $error_descripcion = "La descripción no puede exceder 500 caracteres.";
+        }
+
+        // Estado (opcional)
+        if ($estado !== '' && mb_strlen($estado) > 15) {
+            $error_estado = "El estado no puede exceder 15 caracteres.";
+        }
+
+        // Etiquetas (opcional)
+        if (!empty($etiquetas_ids)) {
+            foreach ($etiquetas_ids as $etiqueta_id) {
+                if (!ctype_digit(strval($etiqueta_id))) {
+                    $error_etiquetas = "Una o más etiquetas son inválidas.";
+                    break;
+                }
+            }
+        }
+
+        // Contactos (opcional)
+        if (!empty($contactos_data)) {
+            $contactos_validos = 0;
+            $tiene_principal = false;
+            
+            foreach ($contactos_data as $index => $contacto) {
+                $tipo = trim($contacto['tipo_contacto'] ?? '');
+                $valor = trim($contacto['valor'] ?? '');
+                $es_principal = isset($contacto['es_principal']) ? 1 : 0;
+                
+                // Validar que tenga tipo y valor
+                if (!empty($tipo) && !empty($valor)) {
+                    $contactos_validos++;
+                    if ($es_principal) {
+                        $tiene_principal = true;
+                    }
+                    
+                    // Validar formato según tipo
+                    if ($tipo === 'email' && !filter_var($valor, FILTER_VALIDATE_EMAIL)) {
+                        $error_contactos = "El email no tiene un formato válido.";
+                        break;
+                    }
+                } elseif (!empty($tipo) || !empty($valor)) {
+                    $error_contactos = "Todos los campos de contacto deben estar completos.";
+                    break;
+                }
+            }
+            
+            // Si hay contactos válidos, debe haber al menos uno principal
+            if ($contactos_validos > 0 && !$tiene_principal) {
+                $error_contactos = "Debe seleccionar al menos un contacto como principal.";
+            }
+        }
+
+        // Imagen (obligatoria)
+        if (!$imagen_file || $imagen_file['error']['imagen'] !== UPLOAD_ERR_OK) {
+            $error_imagen = "Debes subir una imagen.";
+        }
+
+        // Verificar si hay errores
+        $hay_errores = !empty($error_titulo) || !empty($error_direccion) || 
+                      !empty($error_superficie) || !empty($error_latitud) || !empty($error_longitud) || 
+                      !empty($error_habitaciones) || !empty($error_banos) || !empty($error_precio) || 
+                      !empty($error_descripcion) || !empty($error_estado) || !empty($error_imagen) || 
+                      !empty($error_etiquetas) || !empty($error_contactos);
+
+        if (!$hay_errores) {
+            // Si no hay errores, procesar la imagen y crear la propiedad
+            $nombre_imagen = $_FILES['propiedades']['name']['imagen'];
+            $ubicacion = __DIR__ . '/../public/img/' . $nombre_imagen;
+            move_uploaded_file($_FILES['propiedades']['tmp_name']['imagen'], $ubicacion);
+            
+            $propiedades = new Propiedad($_POST['propiedades']);
+            $propiedades->setImagen($nombre_imagen);
+            $resultado = $propiedades->crear();
+            
+            if($resultado){
+                // Guardar contactos si existen
+                if (!empty($contactos_data)) {
+                    $usuarioId = $_SESSION['id'] ?? 0;
+                    
+                    foreach ($contactos_data as $contacto) {
+                        $tipo = trim($contacto['tipo_contacto'] ?? '');
+                        $valor = trim($contacto['valor'] ?? '');
+                        $es_principal = isset($contacto['es_principal']) ? 1 : 0;
+                        
+                        // Solo guardar contactos completos
+                        if (!empty($tipo) && !empty($valor)) {
+                            $contactoData = [
+                                'id_usuario' => $usuarioId,
+                                'tipo_contacto' => $tipo,
+                                'valor' => $valor,
+                                'es_principal' => $es_principal
+                            ];
+                            
+                            $nuevoContacto = new Contacto($contactoData);
+                            $nuevoContacto->crear();
+                        }
+                    }
+                }
+                
+                header('Location: /usuario/mispropiedades');
+                exit;
+            }
+        }
     }
 
-public static function verDetalleContacto(Router $router) {//ojo
-    
-    $id_propiedad = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
-    
-    if (!$id_propiedad) {
-        
-        header('Location: /venta');
-        exit;
-    }
-    $contactos = Propiedad::findConContactos($id_propiedad);
-
-    $router->render('usuario/detalleContacto', [
-        'contactos' => $contactos,
-        'id_propiedad' => $id_propiedad
+    $router->render('usuario/publicar_propiedad', [
+        'propiedades' => $propiedades,
+        'etiquetas' => $etiquetas,
+        'error_titulo' => $error_titulo,
+        'error_direccion' => $error_direccion,
+        'error_superficie' => $error_superficie,
+        'error_latitud' => $error_latitud,
+        'error_longitud' => $error_longitud,
+        'error_habitaciones' => $error_habitaciones,
+        'error_banos' => $error_banos,
+        'error_precio' => $error_precio,
+        'error_descripcion' => $error_descripcion,
+        'error_estado' => $error_estado,
+        'error_imagen' => $error_imagen,
+        'error_etiquetas' => $error_etiquetas,
+        'error_contactos' => $error_contactos
     ]);
 }
 public static function EditarPropiedad(Router $router){
@@ -172,6 +407,22 @@ public static function Eliminar(Router $router) {
     exit;
 }
 
+public static function verDetalleContacto(Router $router) {//ojo
+    
+    $id_propiedad = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+    
+    if (!$id_propiedad) {
+        
+        header('Location: /venta');
+        exit;
+    }
+    $contactos = Propiedad::findConContactos($id_propiedad);
+
+    $router->render('usuario/detalleContacto', [
+        'contactos' => $contactos,
+        'id_propiedad' => $id_propiedad
+    ]);
+}
 
 }
 

@@ -7,12 +7,12 @@ class Router{
     public array $getRoutes = [];
     public array $postRoutes = [];
 
-    public function get(string $url, callable $fn): void
+    public function get(string $url, $fn): void
     {
         $this->getRoutes[$url] = $fn;
     }
 
-    public function post(string $url, callable $fn): void
+    public function post(string $url, $fn): void
     {
         $this->postRoutes[$url] = $fn;
     }
@@ -27,7 +27,11 @@ class Router{
         : ($this->postRoutes[$urlActual] ?? null);
 
         if($fn){
-            call_user_func($fn, $this);
+            if (is_array($fn)) {
+                call_user_func($fn, $this);
+            } else {
+                $fn($this);
+            }
         } else{
             http_response_code(404);
             echo "<h3>Página no encontrada</h3>";

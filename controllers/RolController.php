@@ -112,7 +112,7 @@ class RolController {
         
         // Obtener permisos ya asignados al rol
         $permisos_asignados = [];
-        $query = "SELECT id_permiso FROM rol_permiso WHERE id_rol = " . $db->escape_string($id_rol);
+        $query = "SELECT id_permiso FROM rolpermiso WHERE id_rol = " . $db->escape_string($id_rol);
         $resultado = $db->query($query);
         if($resultado){
             $permisos_asignados = array_column($resultado->fetch_all(MYSQLI_ASSOC), 'id_permiso');
@@ -133,7 +133,7 @@ class RolController {
                 $resultado = $rol->actualizar($id_rol);
                 if($resultado){
                     // Eliminar permisos existentes
-                    $query = "DELETE FROM rol_permiso WHERE id_rol = " . $db->escape_string($id_rol);
+                    $query = "DELETE FROM rolpermiso WHERE id_rol = " . $db->escape_string($id_rol);
                     $db->query($query);
                     
                     // Agregar nuevos permisos seleccionados

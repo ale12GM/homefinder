@@ -123,12 +123,9 @@ class Usuario extends ActivaModelo {
     $_SESSION['usuario'] = $this->email;
     $_SESSION['login']   = true;
     $_SESSION['id']      = $this->id;
-
-
     $_SESSION['nombre']   = $this->nombre;
     $_SESSION['apellido'] = $this->apellido;
     $_SESSION['email']    = $this->email;
-    header('Location: /usuario/propiedades');
 
     // Roles del usuario
     $_SESSION['roles'] = $this->obtenerRoles();
@@ -136,7 +133,7 @@ class Usuario extends ActivaModelo {
     // Permisos del usuario
     $_SESSION['permisos'] = $this->obtenerPermisos();
     
-    // Redirección final (se elimina temporalmente para depuración)
+    // Redirección final
     header('Location: /usuario/home');
     exit;
 }
@@ -187,6 +184,119 @@ public function obtenerPermisos(): array {
     }
     return null;
 }
+
+    public function obtenerRoles(): array {
+        $roles = [];
+        $idUsuario = $this->id;
+
+        $query = "SELECT r.nombre 
+                  FROM roles r
+                  INNER JOIN usuariorol ur ON r.id = ur.id_rol
+                  WHERE ur.id_usuario = $idUsuario";
+
+        $resultado = self::$db->query($query);
+        if ($resultado) {
+            while ($row = $resultado->fetch_assoc()) {
+                $roles[] = $row['nombre'];
+            }
+        }
+
+        return $roles; // ej: ['usuario', 'admin']
+    }
+
+    public static function where($campo, $valor): array {
+        $valor = self::$db->escape_string($valor);
+        $query = "SELECT * FROM " . static::$tabla . " WHERE {$campo} = '{$valor}'";
+        $resultado = self::$db->query($query);
+        
+        $usuarios = [];
+        if ($resultado) {
+            while ($row = $resultado->fetch_assoc()) {
+                $usuarios[] = $row;
+            }
+        }
+        
+        return $usuarios;
+    }
+
+    /**
+     * Valida la contraseña según las normativas de la base de datos
+     * @param string $password
+     * @param string $confirmar
+     * @return array Array de errores, vacío si no hay errores
+     */
+    public static function validarPassword($password, $confirmar = null): array {
+        $errores = [];
+        
+        // Obtener la normativa activa
+        $normativa = NormativaContrasenia::obtenerNormativaActiva();
+        
+        if (!$normativa) {
+            $errores[] = "No se encontró normativa de contraseña activa";
+            return $errores;
+        }
+        
+        // Validar longitud mínima
+        if ($normativa->longitud_minima && strlen($password) < $normativa->longitud_minima) {
+            $errores[] = "La contraseña debe tener al menos {$normativa->longitud_minima} caracteres";
+        }
+        
+        // Validar longitud máxima
+        if ($normativa->longitud_maxima && strlen($password) > $normativa->longitud_maxima) {
+            $errores[] = "La contraseña no puede tener más de {$normativa->longitud_maxima} caracteres";
+        }
+        
+        // Validar mayúsculas
+        if ($normativa->requiere_mayusculas && !preg_match('/[A-Z]/', $password)) {
+            $errores[] = "La contraseña debe contener al menos una letra mayúscula";
+        }
+        
+        // Validar minúsculas
+        if ($normativa->requiere_minusculas && !preg_match('/[a-z]/', $password)) {
+            $errores[] = "La contraseña debe contener al menos una letra minúscula";
+        }
+        
+        // Validar números
+        if ($normativa->requiere_numeros && !preg_match('/[0-9]/', $password)) {
+            $errores[] = "La contraseña debe contener al menos un número";
+        }
+        
+        // Validar símbolos
+        if ($normativa->requiere_simbolos) {
+            $simbolos = preg_match_all('/[^a-zA-Z0-9]/', $password);
+            if ($simbolos == 0) {
+                $errores[] = "La contraseña debe contener al menos un símbolo";
+            } elseif ($normativa->cantidad_simbolos && $simbolos < $normativa->cantidad_simbolos) {
+                $errores[] = "La contraseña debe contener al menos {$normativa->cantidad_simbolos} símbolos";
+            }
+        }
+        
+        // Validar confirmación de contraseña
+        if ($confirmar !== null && $password !== $confirmar) {
+            $errores[] = "Las contraseñas no coinciden";
+        }
+        
+        return $errores;
+    }
+
+    /**
+     * Obtiene los últimos usuarios registrados
+     * @param int $limite
+     * @return array
+     */
+    public static function ultimos($limite = 5): array {
+        $query = "SELECT * FROM " . self::$tabla . " ORDER BY fecha_registro DESC LIMIT " . intval($limite);
+        $resultado = self::$db->query($query);
+        
+        $usuarios = [];
+        if ($resultado) {
+            while ($row = $resultado->fetch_assoc()) {
+                $usuarios[] = new self($row);
+            }
+        }
+        
+        return $usuarios;
+    }
 }
 
 ?>

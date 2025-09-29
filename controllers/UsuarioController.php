@@ -130,7 +130,6 @@ class UsuarioController{
             $resultado = $Usuario->crear();
 
             if ($resultado) {
-                echo'hubooooooo un error';
                 header("Location: /login");
                 exit;
             } else {
