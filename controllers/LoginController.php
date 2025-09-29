@@ -20,13 +20,21 @@ class LoginController{
                 if(!$resultado){
                     $errores = Usuario::getErrores();
                 }else{
-                    $auth->comprobarPassword($resultado);
-                    if($auth->autenticado ?? false){
-                        $auth->obtenerId();
-                        $auth->autenticar();
-                        return;
+                    // Verificar si el usuario está activo antes de comprobar la contraseña
+                    $usuario = $resultado->fetch_assoc();
+                    if($usuario['estado'] != 1) {
+                        $errores[] = "Tu cuenta está desactivada. Contacta al administrador para más información.";
                     } else {
-                        $errores = Usuario::getErrores();
+                        // Resetear el puntero del resultado para que funcione con comprobarPassword
+                        $resultado->data_seek(0);
+                        $auth->comprobarPassword($resultado);
+                        if($auth->autenticado ?? false){
+                            $auth->obtenerId();
+                            $auth->autenticar();
+                            return;
+                        } else {
+                            $errores = Usuario::getErrores();
+                        }
                     }
                 }
             }

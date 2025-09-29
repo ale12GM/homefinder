@@ -84,19 +84,40 @@ class Usuario extends ActivaModelo {
         return null;
     }
 }
-    public function autenticar()
-    {
-        session_start();
-        $_SESSION['usuario']=$this->email;
-        $_SESSION['login']=true;
-        $_SESSION['id']=$this->id;
-        header('Location: /usuario/propiedades');
-        exit;
-    }
+  public function autenticar()
+{
+    session_start();
+
+    $_SESSION['usuario']  = $this->email;
+    $_SESSION['login']    = true;
+    $_SESSION['id']       = $this->id;
+    $_SESSION['nombre']   = $this->nombre;
+    $_SESSION['apellido'] = $this->apellido;
+    $_SESSION['email']    = $this->email;
+
+    header('Location: /usuario/propiedades');
+    exit;
+}
+
     public static function getErrores()
     {
         return static::$errores;
     }
+
+    public static function find($id) {
+    $id = self::$db->escape_string($id); 
+    $query = "SELECT * FROM " . static::$tabla . " WHERE id = {$id} LIMIT 1";
+    $resultado = self::$db->query($query);
+
+    if($resultado && $resultado->num_rows === 1) {
+        $registro = $resultado->fetch_assoc();
+        return new static($registro);
+    }
+    return null;
+}
+
+
+    
 }
 
 ?>

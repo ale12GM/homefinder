@@ -84,5 +84,7 @@ class ActivaModelo{
     return $registros;
 }
 
+
+
 }
 ?>

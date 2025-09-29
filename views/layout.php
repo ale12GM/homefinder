@@ -87,25 +87,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <img src="https://via.placeholder.com/80" 
            alt="Foto usuario" 
            class="w-20 h-20 rounded-full border-4 border-gray-200 shadow">
-      <h2 class="mt-2 text-lg font-bold text-[#DDA15E]">Carlos</h2>
+      <h2 class="mt-2 text-lg font-bold text-[#DDA15E]">
+        <?php echo htmlspecialchars($_SESSION['usuario'] ?? 'Invitado'); ?>
+      </h2>
     </div>
 
     <!-- Opciones -->
     <div class="flex flex-col gap-3">
       <button id="btnEditar"
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
+         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Editar
       </button>
       <a href="/seguridad" 
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
+         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Seguridad
       </a>
       <a href="/usuario/mispropiedades" 
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
+         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Ver Propiedades
       </a>
      <form action="" method="post">
-    <?php echo $_SESSION['usuario']?>
     <input type="hidden" name="cerrar">
     <button type="submit" class="block w-full text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition mt-4">
       Cerrar Secion
@@ -116,126 +117,160 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 </div>
 
 <!-- Overlay del modal editar perfil -->
-<div id="overlayEditar" 
-     class="hidden fixed inset-0 bg-black bg-opacity-50 z-40">
-
-  <!-- Subventana Editar Perfil (esquina) -->
-  <div id="modalEditar"
-       class="absolute right-4 top-5 w-[420px] bg-white border rounded-2xl shadow-2xl p-8 z-50">
-
-    <!-- Botón cerrar modal -->
-    <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl">
-      ✕
-    </button>
-
-    <!-- Encabezado -->
-    <h2 class="text-2xl font-bold text-left text-[#DDA15E] mb-4">Editar Perfil</h2>
+<!-- Overlay del modal editar perfil -->
+<div id="overlayEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40">
+  <div id="modalEditar" class="absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50">
+    
+    <!-- Botón cerrar -->
+    <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg">✕</button>
+    
+    <!-- Título -->
+    <h2 class="text-xl font-bold text-left text-[#DDA15E] mb-4">Editar Perfil</h2>
 
     <!-- Foto y nombre -->
-    <div class="flex flex-col items-center mb-6">
-      <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FEFAE0] shadow-md">
+    <div class="flex flex-col items-center mb-5">
+      <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FEFAE0] shadow">
         <img src="https://i.pravatar.cc/150?img=3" alt="Usuario" class="w-full h-full object-cover">
       </div>
-      <h3 class="mt-3 text-lg font-semibold text-[#5B674D]">Carlos</h3>
+      <h2 class="mt-2 text-lg font-semibold text-[#5B674D]">
+        <?php echo htmlspecialchars($_SESSION['usuario']); ?>
+      </h2>
     </div>
 
     <!-- Formulario -->
-    <form class="flex flex-col gap-4">
-      <input type="text" placeholder="Nombre" 
-             class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#DDA15E]">
-      <input type="text" placeholder="Apellido" 
-             class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#DDA15E]">
-      <input type="email" placeholder="Email" 
-             class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#DDA15E]">
+    <form id="form-editar-perfil" class="flex flex-col gap-3 text-sm" onsubmit="return validarFormulario()">
+      <input type="hidden" id="editar-id" name="id" value="<?php echo $_SESSION['id']; ?>">
 
-      <!-- Contraseña con ojito -->
+      <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 " 
+             name="nombre" id="editar-nombre" type="text" placeholder="Nombre" required>
+
+      <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 " 
+             name="apellido" id="editar-apellido" type="text" placeholder="Apellido" required>
+
+      <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 " 
+             name="email" id="editar-email" type="email" placeholder="Email" required>
+
+      <!-- Contraseñas con icono -->
       <div class="relative">
-        <input type="password" id="password" placeholder="Contraseña" 
-               class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#DDA15E]">
-        <button type="button" id="togglePassword" 
-                class="absolute inset-y-0 right-3 flex items-center text-gray-500">
-          👁️
-        </button>
+        <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 pr-10" 
+               type="password" name="actual" id="actual" placeholder="Contraseña actual">
+        <button type="button" onclick="togglePassword('actual')" class="absolute right-3 top-2.5 text-gray-500">👁</button>
       </div>
 
-      <!-- Confirmar contraseña con ojito -->
       <div class="relative">
-        <input type="password" id="confirmPassword" placeholder="Confirmar Contraseña" 
-               class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#DDA15E]">
-        <button type="button" id="toggleConfirmPassword" 
-                class="absolute inset-y-0 right-3 flex items-center text-gray-500">
-          👁️
-        </button>
+        <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 pr-10 " 
+               type="password" name="nueva" id="nueva" placeholder="Nueva contraseña">
+        <button type="button" onclick="togglePassword('nueva')" class="absolute right-3 top-2.5 text-gray-500">👁</button>
       </div>
 
-      <button type="submit" 
-              class="bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition">
-        Editar
-      </button>
+      <div class="relative">
+        <input class="w-full border border-[#5B674D] rounded-full px-4 py-2 pr-10 " 
+               type="password" name="confirmar" id="confirmar" placeholder="Confirmar nueva contraseña">
+        <button type="button" onclick="togglePassword('confirmar')" class="absolute right-3 top-2.5 text-gray-500">👁</button>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex gap-2 mt-4">
+        <button type="button" onclick="cerrarModal()" 
+                class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-full ">
+          Cancelar
+        </button>
+        <button type="submit" 
+                class="flex-1 bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full">
+          Guardar
+        </button>
+      </div>
     </form>
   </div>
 </div>
 
 <script>
-  const avatarBtn = document.getElementById('avatarBtn');
-  const overlayPerfil = document.getElementById('overlayPerfil');
-  const menuUser = document.getElementById('menuUser');
-  const closeMenu = document.getElementById('closeMenu');
-
-  const btnEditar = document.getElementById('btnEditar');
-  const overlayEditar = document.getElementById('overlayEditar');
-  const closeModal = document.getElementById('closeModal');
-
-  // Mostrar menú perfil
-  avatarBtn.addEventListener('click', () => {
-    overlayPerfil.classList.remove('hidden');
-  });
-
-  // Cerrar menú perfil
-  closeMenu.addEventListener('click', () => {
-    overlayPerfil.classList.add('hidden');
-  });
-
-  // Cerrar perfil clickeando fuera
-  overlayPerfil.addEventListener('click', (e) => {
-    if (e.target === overlayPerfil) {
-      overlayPerfil.classList.add('hidden');
-    }
-  });
-
-  // Abrir subventana editar
-  btnEditar.addEventListener('click', () => {
-    overlayEditar.classList.remove('hidden');
-    overlayPerfil.classList.add('hidden'); // cerrar perfil al abrir editar
-  });
-
-  // Cerrar subventana editar
-  closeModal.addEventListener('click', () => {
-    overlayEditar.classList.add('hidden');
-  });
-
-  // Cerrar editar clickeando fuera
-  overlayEditar.addEventListener('click', (e) => {
-    if (e.target === overlayEditar) {
-      overlayEditar.classList.add('hidden');
-    }
-  });
-
-  // Mostrar / ocultar contraseñas
-  const togglePassword = document.getElementById('togglePassword');
-  const password = document.getElementById('password');
-  togglePassword.addEventListener('click', () => {
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-  });
-
-  const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-  const confirmPassword = document.getElementById('confirmPassword');
-  toggleConfirmPassword.addEventListener('click', () => {
-    const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-    confirmPassword.setAttribute('type', type);
-  });
+  // Mostrar / ocultar contraseña
+  function togglePassword(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === "password" ? "text" : "password";
+  }
 </script>
+
+
+<script>
+  // Función para cerrar modal
+function cerrarModal() {
+  document.getElementById('overlayEditar').classList.add('hidden');
+}
+
+// Cerrar modal al hacer click en la X
+document.getElementById('closeModal')?.addEventListener('click', cerrarModal);
+
+// Cerrar modal al hacer click fuera del modal (en el overlay)
+document.getElementById('overlayEditar')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('overlayEditar')) cerrarModal();
+});
+
+// Cerrar modal al presionar botón "Cancelar" dentro del form
+document.querySelector('#form-editar-perfil button[onclick="cerrarModal()"]')?.addEventListener('click', cerrarModal);
+
+// Avatar menu
+document.getElementById('avatarBtn')?.addEventListener('click', () => document.getElementById('overlayPerfil').classList.remove('hidden'));
+document.getElementById('closeMenu')?.addEventListener('click', () => document.getElementById('overlayPerfil').classList.add('hidden'));
+
+// Editar perfil
+document.getElementById('btnEditar')?.addEventListener('click', async () => {
+  document.getElementById('overlayEditar').classList.remove('hidden');
+  try {
+    const response = await fetch(`/usuarios/obtener?id=${document.getElementById('editar-id').value}`);
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('editar-nombre').value = data.usuario.nombre || '';
+      document.getElementById('editar-apellido').value = data.usuario.apellido || '';
+      document.getElementById('editar-email').value = data.usuario.email || '';
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+});
+
+// Cerrar modales
+function cerrarModal() {
+  document.getElementById('overlayEditar').classList.add('hidden');
+}
+
+// Validación de contraseñas
+function validarFormulario() {
+  const nueva = document.querySelector('input[name="nueva"]').value;
+  const confirmar = document.querySelector('input[name="confirmar"]').value;
+  const actual = document.querySelector('input[name="actual"]').value;
+  
+  if (nueva && nueva !== confirmar) {
+    alert('Las contraseñas nuevas no coinciden');
+    return false;
+  }
+  if (nueva && !actual) {
+    alert('Debes ingresar tu contraseña actual para cambiarla');
+    return false;
+  }
+  return true;
+}
+
+// Enviar formulario
+document.getElementById('form-editar-perfil')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  try {
+    const response = await fetch('/usuarios/actualizarPerfil', { method: 'POST', body: formData });
+    const data = await response.json();
+    if (data.success) {
+      alert("Perfil actualizado correctamente");
+      cerrarModal();
+    } else {
+      alert(data.message || "Error al actualizar el perfil");
+    }
+  } catch (error) {
+    alert("Error de conexión");
+  }
+});
+</script>
+
 <?php endif; ?>
 
 
