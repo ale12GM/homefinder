@@ -56,12 +56,12 @@
                 <img src="https://via.placeholder.com/40" alt="Avatar" class="w-full h-full object-cover">
               </div>
               <div>
-                <p class="font-medium"><?= htmlspecialchars($u['nombre']); ?></p>
-                <p class="text-sm text-gray-500"><?= htmlspecialchars($u['email']); ?></p>
+                <p class="font-medium"><?= htmlspecialchars($u->nombre); ?></p>
+                <p class="text-sm text-gray-500"><?= htmlspecialchars($u->email); ?></p>
               </div>
             </div>
             <div class="text-sm text-gray-500">
-              <?= ($u['estado'] == 1) ? 'Activo' : 'Inactivo'; ?>
+              <?= ($u->estado == 1) ? 'Activo' : 'Inactivo'; ?>
             </div>
           </div>
         <?php endforeach; ?>

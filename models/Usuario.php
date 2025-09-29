@@ -380,6 +380,25 @@ public function obtenerPermisos(): array {
         }
     }
 
+    /**
+     * Obtiene los últimos usuarios registrados
+     * @param int $limite
+     * @return array
+     */
+    public static function ultimos($limite = 5): array {
+        $query = "SELECT * FROM " . self::$tabla . " ORDER BY fecha_registro DESC LIMIT " . intval($limite);
+        $resultado = self::$db->query($query);
+        
+        $usuarios = [];
+        if ($resultado) {
+            while ($row = $resultado->fetch_assoc()) {
+                $usuarios[] = new self($row);
+            }
+        }
+        
+        return $usuarios;
+    }
+
 
 }
 
