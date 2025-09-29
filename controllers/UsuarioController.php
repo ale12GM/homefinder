@@ -164,7 +164,6 @@ class UsuarioController{
         'errores' => $errores
     ]);
     
-    
 }
 }
 
