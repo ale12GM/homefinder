@@ -7,7 +7,7 @@ use Model\NormativaContrasenia;
 
 class Usuario extends ActivaModelo {
     protected static $tabla = 'usuarios';
-    protected static $columnDB = ['id','nombre','apellido','email','password','fecha_registro', 'estado', 'intentos_login', 'ultimo_intento'];
+    protected static $columnDB = ['id','nombre','apellido','email','password','fecha_registro', 'estado'];
 
     public $id;
     public $nombre;
@@ -16,8 +16,6 @@ class Usuario extends ActivaModelo {
     public $password;
     public $autenticado=false;
     public $estado;
-    public $intentos_login;
-    public $ultimo_intento;
     protected static $errores=[];
 
     public function __construct($args = []) {
@@ -27,8 +25,6 @@ class Usuario extends ActivaModelo {
         $this->email = $args['email'] ?? null;
         $this->password = $args['password'] ?? null;
         $this->estado = $args['estado'] ?? null;
-        $this->intentos_login = $args['intentos_login'] ?? 0;
-        $this->ultimo_intento = $args['ultimo_intento'] ?? null;
     }
     public function validar(){
         if(!$this->email){

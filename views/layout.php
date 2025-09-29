@@ -40,8 +40,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 <nav id="menu" class="hidden md:flex md:items-center md:space-x-8 font-bold text-[#d29057] absolute md:static top-16 left-0 w-full md:w-auto bg-white md:bg-transparent p-6 md:p-0 shadow-md md:shadow-none">
   <ul class="flex flex-col md:flex-row gap-6 md:gap-8">
     <li><a href="/usuario/home" class="hover:text-[#a66933]">Inicio</a></li>
-    <li><a href="#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
-    <li><a href="#contacto" class="hover:text-[#a66933]">Contacto</a></li>
+    
+    <?php if (isset($_SESSION['roles']) && in_array("Usuario", $_SESSION['roles'])): ?>
+      <!-- Menú para administradores -->
+      <li><a href="/usuario/home#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
+      <li><a href="/usuario/home#contacto" class="hover:text-[#a66933]">Contacto</a></li>
+      <?php else: ?>
+        <!-- Menú para usuarios normales -->
+        <li><a href="/admin/gestion_de_usuarios" class="hover:text-[#a66933]">Usuarios</a></li>
+        <li><a href="/admin/roles" class="hover:text-[#a66933]">Roles</a></li>
+    <?php endif; ?>
+    
     <li><a href="/usuario/propiedades/publicar" class="hover:text-[#a66933]">Vender</a></li>
     <li><a href="/usuario/propiedades" class="hover:text-[#a66933]">Comprar</a></li>
   </ul>
@@ -89,11 +98,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
            class="w-20 h-20 rounded-full border-4 border-gray-200 shadow">
       <h2 class="mt-2 text-lg font-bold text-[#DDA15E]">
         <?php echo htmlspecialchars($_SESSION['usuario'] ?? 'Invitado'); ?>
+        <?php if (isset($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
+          <span class="ml-2 text-xs bg-[#DDA15E] text-white px-2 py-1 rounded-full">ADMIN</span>
+        <?php endif; ?>
       </h2>
     </div>
 
     <!-- Opciones -->
     <div class="flex flex-col gap-3">
+      
       <button id="btnEditar"
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Editar
