@@ -1,13 +1,14 @@
 <?php
 namespace Controllers;
-use Model\Contactos;
+use Model\Contacto;
 use MVC\Router;
 class ContactosController{
     public static function IndexContactos(Router $router){
-        $contactos = Contactos::listar();
+        $contactos = Contacto::listar();
         $router->render('usuario/contacto',[
             'contacto' => $contactos
         ]);
     }
+    
 }
 ?>

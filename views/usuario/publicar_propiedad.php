@@ -1,147 +1,3 @@
-<?php
-session_start();
-// Variables de error inicializadas vacías
-$error_titulo        = "";
-$error_n_catastral   = "";
-$error_direccion     = "";
-$error_superficie    = "";
-$error_latitud       = "";
-$error_longitud      = "";
-$error_habitaciones  = "";
-$error_banos         = "";
-$error_precio        = "";
-$error_descripcion   = "";
-$error_estado        = "";
-$error_imagen        = "";
-$error_etiquetas     = "";
-
-// Inicializar variables de formulario
-$id_usuario    = $_POST['propiedades']['id_usuario'] ?? 0; 
-$titulo        = trim($_POST['propiedades']['titulo'] ?? '');
-$n_catastral   = trim($_POST['n_catastral'] ?? ''); // este no va a la BD
-$direccion     = trim($_POST['propiedades']['direccion'] ?? '');
-$superficie    = trim($_POST['propiedades']['superficie_total'] ?? '');
-$latitud       = trim($_POST['propiedades']['latitud'] ?? '');
-$longitud      = trim($_POST['propiedades']['longitud'] ?? '');
-$habitaciones  = $_POST['propiedades']['num_habitaciones'] ?? null;
-$banos         = $_POST['propiedades']['num_banos'] ?? null;
-$precio        = trim($_POST['propiedades']['precio'] ?? '');
-$descripcion   = trim($_POST['descripcion'] ?? '');
-$estado        = trim($_POST['propiedades']['estado'] ?? ''); 
-$etiqueta_id   = $_POST['etiquetas'] ?? null;  
-$imagen_file   = $_FILES['imagen'] ?? null;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // --- Validaciones obligatorias ---
-
-    // Título
-    if ($titulo === '') {
-        $error_titulo = "El título es obligatorio.";
-    } elseif (mb_strlen($titulo) > 50) {
-        $error_titulo = "El título no puede exceder 50 caracteres.";
-    }
-
-    // Nº Catastral (opcional, solo longitud)
-    if ($n_catastral === '') {
-    $error_n_catastral = "El Nº Catastral es obligatorio.";
-} elseif (mb_strlen($n_catastral) > 100) {
-    $error_n_catastral = "Número catastral muy largo.";
-}
-    // Dirección
-    if ($direccion === '') {
-        $error_direccion = "La dirección es obligatoria.";
-    } elseif (mb_strlen($direccion) > 255) {
-        $error_direccion = "La dirección no puede exceder 255 caracteres.";
-    }
-
-    // Superficie
-    if ($superficie === '') {
-        $error_superficie = "La superficie es obligatoria.";
-    } elseif (!is_numeric($superficie)) {
-        $error_superficie = "La superficie debe ser un número.";
-    } else {
-        $superficie = number_format((float)$superficie, 2, '.', '');
-    }
-
-    // Latitud
-    if ($latitud !== '') {
-        if (!is_numeric($latitud)) {
-            $error_latitud = "La latitud debe ser numérica.";
-        } else {
-            $latitud = number_format((float)$latitud, 6, '.', '');
-        }
-    }
-
-    // Longitud
-    if ($longitud !== '') {
-        if (!is_numeric($longitud)) {
-            $error_longitud = "La longitud debe ser numérica.";
-        } else {
-            $longitud = number_format((float)$longitud, 6, '.', '');
-        }
-    }
-
-    // Habitaciones
-    if ($habitaciones !== null && $habitaciones !== '') {
-        if (filter_var($habitaciones, FILTER_VALIDATE_INT) === false || (int)$habitaciones < 0) {
-            $error_habitaciones = "Número de habitaciones inválido.";
-        } else {
-            $habitaciones = (int)$habitaciones;
-        }
-    } else {
-        $habitaciones = null;
-    }
-
-    // Baños
-    if ($banos !== null && $banos !== '') {
-        if (filter_var($banos, FILTER_VALIDATE_INT) === false || (int)$banos < 0) {
-            $error_banos = "Número de baños inválido.";
-        } else {
-            $banos = (int)$banos;
-        }
-    } else {
-        $banos = null;
-    }
-
-    // Precio
-    if ($precio === '') {
-        $error_precio = "El precio es obligatorio.";
-    } elseif (!is_numeric($precio)) {
-        $error_precio = "El precio debe ser un número.";
-    } else {
-        $precio = number_format((float)$precio, 2, '.', '');
-    }
-
-    // Descripción
-    if ($descripcion === '') {
-        $error_descripcion = "La descripción es obligatoria.";
-    } elseif (mb_strlen($descripcion) > 500) {
-        $error_descripcion = "La descripción no puede exceder 500 caracteres.";
-    }
-
-    // Estado (opcional)
-    if ($estado !== '' && mb_strlen($estado) > 15) {
-        $error_estado = "El estado no puede exceder 15 caracteres.";
-    }
-
-    // Etiquetas (opcional)
-    if ($etiqueta_id !== null && $etiqueta_id !== '') {
-        if (!ctype_digit(strval($etiqueta_id))) {
-            $error_etiquetas = "Etiqueta inválida.";
-        }
-    } else {
-        $etiqueta_id = null;
-    }
-
-    // Imagen (obligatoria)
-    if (!$imagen_file || $imagen_file['error'] !== UPLOAD_ERR_OK) {
-        $error_imagen = "Debes subir una imagen.";
-    } 
-}
-?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -167,19 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="hidden" name="propiedades[fecha_actualizacion]" value="">
       <input type="hidden" name="propiedades[estado]" value="activo">
 
-      <!-- Primera fila: Título y Nº Catastral -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Título:</label>
-          <input type="text" name="propiedades[titulo]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
-        </div>
-  <?php if (!empty($error_titulo)): ?>
-    <p class="text-red-500 text-sm mt-1"><?php echo $error_titulo; ?></p>
-  <?php endif; ?>        
+      <!-- Título -->
       <div>
-          <label class="block text-sm font-medium text-gray-700">Nº Catastral:</label>
-          <input type="text" name="n_catastral" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
-        </div>
+        <label class="block text-sm font-medium text-gray-700">Título:</label>
+        <input type="text" name="propiedades[titulo]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+        <?php if (!empty($error_titulo)): ?>
+          <p class="text-red-500 text-sm mt-1"><?php echo $error_titulo; ?></p>
+        <?php endif; ?>
       </div>
 
       <!-- Dirección y Superficie -->
@@ -187,18 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
           <label class="block text-sm font-medium text-gray-700">Dirección:</label>
           <input type="text" name="propiedades[direccion]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <?php if (!empty($error_direccion)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_direccion; ?></p>
+          <?php endif; ?>
         </div>
-        
-        <?php if (!empty($error_direccion)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_direccion; ?></p>
-        <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Superficie:</label>
           <input type="text" name="propiedades[superficie_total]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
+          <?php if (!empty($error_superficie)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_superficie; ?></p>
+          <?php endif; ?>
         </div>
-        <?php if (!empty($error_superficie)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_superficie; ?></p>
-        <?php endif; ?> 
       </div>
 
       <!-- Latitud y Longitud -->
@@ -206,68 +55,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
           <label class="block text-sm font-medium text-gray-700">Latitud:</label>
           <input type="text" name="propiedades[latitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <?php if (!empty($error_latitud)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
+          <?php endif; ?>
         </div>
-        <?php if (!empty($error_latitud)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
-        <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Longitud:</label>
           <input type="text" name="propiedades[longitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <?php if (!empty($error_longitud)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_longitud; ?></p>
+          <?php endif; ?>
         </div>
-      </div>
-      <?php if (!empty($error_longitud)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_longitud; ?></p>
-        <?php endif; ?> 
+      </div> 
 
       <!-- Habitaciones y Baños -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Número de Habitaciones:</label>
           <input type="number" name="propiedades[num_habitaciones]" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <?php if (!empty($error_habitaciones)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_habitaciones; ?></p>
+          <?php endif; ?>
         </div>
-        <?php if (!empty($error_habitaciones)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
-        <?php endif; ?> 
         <div>
           <label class="block text-sm font-medium text-gray-700">Número de Baños:</label>
           <input type="number" name="propiedades[num_banos]" min="0" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
+          <?php if (!empty($error_banos)): ?>
+            <p class="text-red-500 text-sm mt-1"><?php echo $error_banos; ?></p>
+          <?php endif; ?>
         </div>
-        <?php if (!empty($error_banos)): ?>
-          <p class="text-red-500 text-sm mt-1"><?php echo $error_banos; ?></p>
-        <?php endif; ?> 
       </div>
 
-      <!-- Precio y Etiquetas -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Precio:</label>
-          <input type="text" name="propiedades[precio]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
-        </div>
+      <!-- Precio -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Precio:</label>
+        <input type="text" name="propiedades[precio]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required />
         <?php if (!empty($error_precio)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_precio; ?></p>
-        <?php endif; ?> 
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Etiquetas:</label>
-          <select name="etiquetas" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required>
-            
-            <?php foreach($etiquetas as $e): ?>
-              <option value="<?php echo $e['id']; ?>"><?php echo $e['nombre']; ?></option>
-            <?php endforeach; ?>
-          </select>
+        <?php endif; ?>
+      </div>
+
+      <!-- Etiquetas (Checkboxes) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">Etiquetas:</label>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <?php foreach($etiquetas as $e): ?>
+            <label class="flex items-center space-x-2 p-2 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+              <input type="checkbox" name="etiquetas[]" value="<?php echo $e['id']; ?>" class="rounded border-gray-300 text-[#5B674D] focus:ring-[#5B674D]">
+              <span class="text-sm text-gray-700"><?php echo $e['nombre']; ?></span>
+            </label>
+          <?php endforeach; ?>
         </div>
         <?php if (!empty($error_etiquetas)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_etiquetas; ?></p>
-        <?php endif; ?> 
+        <?php endif; ?>
+      </div>
+
+      <!-- Contactos -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <label class="block text-sm font-medium text-gray-700">Contactos:</label>
+          <button type="button" id="agregarContacto" class="bg-[#5B674D] text-white px-3 py-1 rounded-md text-sm hover:bg-[#4c563d] transition">
+            + Agregar Contacto
+          </button>
+        </div>
+        <div id="contactosContainer" class="space-y-3">
+          <!-- Contacto inicial -->
+          <div class="contacto-item border border-gray-300 rounded-md p-4 bg-gray-50">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Contacto:</label>
+                <select name="contactos[0][tipo_contacto]" class="w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]">
+                  <option value="">Seleccionar tipo</option>
+                  <option value="telefono">Teléfono</option>
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="instagram">Instagram</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Valor:</label>
+                <input type="text" name="contactos[0][valor]" placeholder="Número o email" class="w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]">
+              </div>
+              <div class="flex items-end">
+                <label class="flex items-center space-x-2">
+                  <input type="checkbox" name="contactos[0][es_principal]" value="1" class="rounded border-gray-300 text-[#5B674D] focus:ring-[#5B674D]">
+                  <span class="text-sm text-gray-700">Principal</span>
+                </label>
+                <button type="button" class="eliminarContacto ml-auto bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition" style="display: none;">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php if (!empty($error_contactos)): ?>
+          <p class="text-red-500 text-sm mt-1"><?php echo $error_contactos; ?></p>
+        <?php endif; ?>
       </div>
 
       <!-- Descripción -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Descripción:</label>
         <textarea name="propiedades[descripcion]" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" required></textarea>
-      </div>
         <?php if (!empty($error_descripcion)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_descripcion; ?></p>
-        <?php endif; ?> 
+        <?php endif; ?>
+      </div> 
       <!-- Imagen -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Imagen:</label>
@@ -277,10 +172,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="file" name="propiedades[imagen]" class="hidden" id="fileInput">
           <button type="button" onclick="document.getElementById('fileInput').click()" class="bg-[#DDA15E] text-white px-4 py-2 rounded-md text-sm">Seleccionar una imagen</button>
         </div>
-      </div>
-      <?php if (!empty($error_imagen)): ?>
+        <?php if (!empty($error_imagen)): ?>
           <p class="text-red-500 text-sm mt-1"><?php echo $error_imagen; ?></p>
-      <?php endif; ?> 
+        <?php endif; ?>
+      </div> 
 
       <!-- Botón -->
       <div class="mt-4">
@@ -290,5 +185,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
   </div>
 </div>
+
+<script>
+let contactoIndex = 1;
+
+document.getElementById('agregarContacto').addEventListener('click', function() {
+    const container = document.getElementById('contactosContainer');
+    const nuevoContacto = document.createElement('div');
+    nuevoContacto.className = 'contacto-item border border-gray-300 rounded-md p-4 bg-gray-50';
+    nuevoContacto.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Contacto:</label>
+                <select name="contactos[${contactoIndex}][tipo_contacto]" class="w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]">
+                    <option value="">Seleccionar tipo</option>
+                    <option value="telefono">Teléfono</option>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="instagram">Instagram</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Valor:</label>
+                <input type="text" name="contactos[${contactoIndex}][valor]" placeholder="Número o email" class="w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]">
+            </div>
+            <div class="flex items-end">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="contactos[${contactoIndex}][es_principal]" value="1" class="rounded border-gray-300 text-[#5B674D] focus:ring-[#5B674D]">
+                    <span class="text-sm text-gray-700">Principal</span>
+                </label>
+                <button type="button" class="eliminarContacto ml-auto bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(nuevoContacto);
+    contactoIndex++;
+    
+    // Mostrar botones eliminar en todos los contactos si hay más de uno
+    actualizarBotonesEliminar();
+});
+
+// Función para actualizar la visibilidad de los botones eliminar
+function actualizarBotonesEliminar() {
+    const contactos = document.querySelectorAll('.contacto-item');
+    contactos.forEach((contacto, index) => {
+        const botonEliminar = contacto.querySelector('.eliminarContacto');
+        if (contactos.length > 1) {
+            botonEliminar.style.display = 'block';
+        } else {
+            botonEliminar.style.display = 'none';
+        }
+    });
+}
+
+// Event delegation para botones eliminar
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('eliminarContacto')) {
+        e.target.closest('.contacto-item').remove();
+        actualizarBotonesEliminar();
+    }
+});
+
+// Validación de checkbox principal (solo uno puede ser principal)
+document.addEventListener('change', function(e) {
+    if (e.target.name && e.target.name.includes('[es_principal]')) {
+        const contactos = document.querySelectorAll('input[name*="[es_principal]"]');
+        contactos.forEach(checkbox => {
+            if (checkbox !== e.target && e.target.checked) {
+                checkbox.checked = false;
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>

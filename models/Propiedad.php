@@ -38,9 +38,36 @@ class Propiedad extends ActivaModelo {
         $this->imagen = $args['imagen'] ?? null;
         
     }
+
+
     public function setImagen($imagen){
     $this->imagen = $imagen;
-}
+    }
+
+    public static function findConContactos(int $id_propiedad) : array{
+        $queryUsuario = "SELECT id_usuario FROM " . static::$tabla . " WHERE id = '{$id_propiedad}'";
+        $resultadoUsuario = self::$db->query($queryUsuario);
+
+        if(!$resultadoUsuario || $resultadoUsuario->num_rows===0){
+            return ['error' =>'Propiedad no encontrada o sin usuario asociado.'];
+        }
+        $propiedad = $resultadoUsuario->fetch_assoc();
+        $usuarioId=$propiedad['id_usuario'];
+
+        $queryContactos = "SELECT tipo_contacto, valor FROM contacto WHERE id_usuario = '{$usuarioId}' AND es_principal = 1";
+        $resultadoContactos = self::$db->query($queryContactos);
+
+        $contactos_raw =[];
+
+        if($resultadoContactos){
+            $contactos_raw = $resultadoContactos->fetch_all(MYSQLI_ASSOC);
+        }
+        $contactos_formateados = [];
+        foreach($contactos_raw as $contacto){
+            $contactos_formateados[$contacto['tipo_contacto']] = $contacto['valor'];
+        }
+        return $contactos_formateados;
+    }
 }
 
 ?>

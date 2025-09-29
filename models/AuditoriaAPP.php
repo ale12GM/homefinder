@@ -20,6 +20,21 @@ class AuditoriaApp extends ActivaModelo {
         $this->resultado = $args['resultado'] ?? null;
         $this->ip_origen = $args['ip_origen'] ?? null;
     }
+
+    public static function registrarLogin(string $email, bool $exitoso, string $operacion): bool {
+        $resultadoTexto = $exitoso ? 'Exitoso' : 'Fallido';
+        $ipOrigen = $_SERVER['REMOTE_ADDR'] ?? 'Desconocida'; // Obtener la IP del cliente
+
+        $auditoria = new self([ // Usamos 'self' para instanciar la propia clase
+            'usuario' => $email,
+            'operacion' => $operacion,
+            'resultado' => $resultadoTexto,
+            'ip_origen' => $ipOrigen
+            // 'fecha' se establecerá automáticamente por la base de datos
+        ]);
+
+        return $auditoria->crear(); // Asume que 'crear()' guarda el objeto en la DB
+    }
 }
 
 ?>

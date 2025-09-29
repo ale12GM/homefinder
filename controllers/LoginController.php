@@ -1,20 +1,50 @@
 <?php
 namespace Controllers;
+
 use MVC\Router;
 use Model\Usuario;
+// No es necesario 'use Model\AuditoriaApp;' aquí,
+// ya que la clase Usuario es la que interactúa directamente con AuditoriaApp.
 
 class LoginController{
-    public static function login(Router $router):void
+    public static function login(Router $router): void
     {
         $errores = [];
+        $email_intentado = ''; // Para guardar el email si el formulario lo envía
+
         if($_SERVER["REQUEST_METHOD"] === "POST"){
+            // Sanitizamos los datos del POST.
             $postData = filter_input_array(INPUT_POST,[
                 'email'=> FILTER_SANITIZE_EMAIL,
-                'password'=> FILTER_UNSAFE_RAW
+                'password'=> FILTER_UNSAFE_RAW // password_verify manejará la seguridad de la contraseña
             ]) ?? [];
 
-            $auth = new Usuario($postData);
-            $errores = $auth->validar();
+            $email_intentado = $postData['email'] ?? ''; // Guardamos el email para los errores y auditoría
+
+            // Verificar bloqueo por cookie primero
+            if (!empty($email_intentado)) {
+                $bloqueoCookie = Usuario::verificarCookieBloqueo($email_intentado);
+                if ($bloqueoCookie['bloqueada']) {
+                    $errores[] = $bloqueoCookie['mensaje'];
+                }
+            }
+
+            // Verificar bloqueo por intentos en base de datos
+            if (!empty($email_intentado) && empty($errores)) {
+                $bloqueoDB = Usuario::verificarBloqueo($email_intentado);
+                if ($bloqueoDB['bloqueada']) {
+                    $errores[] = $bloqueoDB['mensaje'];
+                }
+            }
+
+            // Si no hay bloqueos, continuar con la validación normal
+            if (empty($errores)) {
+                $auth = new Usuario($postData); // Creamos un objeto Usuario con los datos enviados
+
+                // 1. Validar que los campos email y password no estén vacíos.
+                $errores = $auth->validar();
+            }
+
             if (empty($errores)){
                 $resultado = $auth->existeUsuario();
                 if(!$resultado){
@@ -41,9 +71,8 @@ class LoginController{
 
         }
         $router->render('auth/login',[
-            'errores' => $errores
+            'errores' => $errores,
+            'email' => $email_intentado // Para pre-llenar el campo email si hubo un error
         ]);
     }
 }
-
-?>

@@ -3,7 +3,7 @@
 namespace Model;
 
 class RolPermiso extends ActivaModelo {
-    protected static $tabla = 'rolpermiso';
+    protected static $tabla = 'rol_permiso';
     protected static $columnDB = ['id_rol','id_permiso'];
 
     public $id_rol;
