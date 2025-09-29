@@ -1,6 +1,8 @@
 <?php
 
 namespace Model;
+use Model\Rol;
+
 
 class Usuario extends ActivaModelo {
     protected static $tabla = 'usuarios';
@@ -85,18 +87,74 @@ class Usuario extends ActivaModelo {
     }
 }
     public function autenticar()
-    {
+{
+    // Inicia la sesión si no está activa
+    if(session_status() === PHP_SESSION_NONE) {
         session_start();
-        $_SESSION['usuario']=$this->email;
-        $_SESSION['login']=true;
-        $_SESSION['id']=$this->id;
-        header('Location: /usuario/propiedades');
-        exit;
     }
+
+    // Datos básicos de sesión
+    $_SESSION['usuario'] = $this->email;
+    $_SESSION['login']   = true;
+    $_SESSION['id']      = $this->id;
+
+    // Roles del usuario
+    $_SESSION['roles'] = $this->obtenerRoles();
+
+    // Permisos del usuario
+    $_SESSION['permisos'] = $this->obtenerPermisos();
+    
+    // Redirección final (se elimina temporalmente para depuración)
+    header('Location: /usuario/home');
+    exit;
+}
+
+public function obtenerPermisos(): array {
+    $idUsuario = $this->id;
+    $permisos = [];
+
+    $query = "SELECT p.nombre
+              FROM permisos p
+              INNER JOIN rolpermiso rp ON p.id = rp.id_permiso
+              INNER JOIN usuariorol ur ON rp.id_rol = ur.id_rol
+              WHERE ur.id_usuario = $idUsuario";
+
+    $resultado = self::$db->query($query);
+    if ($resultado) {
+        while ($row = $resultado->fetch_assoc()) {
+            $permisos[] = $row['nombre'];
+        }
+    }
+
+    return $permisos; // ej: ['ver_propiedad_propia', 'editar_propiedad_propia']
+}
+
     public static function getErrores()
     {
         return static::$errores;
     }
+
+    public function obtenerRoles(): array {
+    $roles = [];
+    $idUsuario = $this->id;
+
+    $query = "SELECT r.nombre 
+              FROM roles r
+              INNER JOIN usuariorol ur ON r.id = ur.id_rol
+              WHERE ur.id_usuario = $idUsuario";
+
+    $resultado = self::$db->query($query);
+    if ($resultado) {
+        while ($row = $resultado->fetch_assoc()) {
+            $roles[] = $row['nombre'];
+        }
+    }
+
+    return $roles; // ej: ['usuario', 'admin']
+}
+
+
+
 }
 
 ?>

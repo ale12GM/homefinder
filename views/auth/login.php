@@ -69,7 +69,7 @@
 
         <p class="text-sm text-center text-gray-600">
           ¿No tienes una cuenta? 
-          <a href="#" class="text-[#DDA15E] hover:underline">Haz clic para crear una</a>
+          <a href="/singUp" class="text-[#DDA15E] hover:underline">Haz clic para crear una</a>
         </p>
 
       </form>

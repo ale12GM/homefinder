@@ -14,6 +14,8 @@ class Rol extends ActivaModelo {
         $this->nombre = $args['nombre'] ?? null;
         $this->descripcion = $args['descripcion'] ?? null;
     }
+
+
 }
 
 ?>

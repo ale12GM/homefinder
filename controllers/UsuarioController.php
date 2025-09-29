@@ -52,8 +52,6 @@ class UsuarioController{
         }
         exit;
     }
-
-
     public static function Actualizar() {
         header('Content-Type: application/json; charset=utf-8');
 
