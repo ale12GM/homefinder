@@ -35,6 +35,9 @@ $router->post('/admin/home', [UsuarioController::class, 'AdminHome']);
 $router->post('/singUp', [UsuarioController::class, 'Crear']);
 $router->get('/singUp', [UsuarioController::class, 'Crear']);
 
+$router->get('/usuario/restablecer', [UsuarioController::class, 'RestablecerContrasena']);
+$router->post('/usuario/restablecer', [UsuarioController::class, 'RestablecerContrasena']);
+
 $router->get('/usuarios/obtener', [UsuarioController::class, 'Obtener']);
 $router->post('/usuarios/actualizar', [UsuarioController::class, 'Actualizar']);
 
