@@ -128,11 +128,24 @@ class UsuarioController{
         }
         if (empty(trim($password))) {
             $errores['password'] = "La contraseña es obligatoria";
-        } 
+        } else {
+            // Validar contraseña según normativas de la base de datos
+            $erroresPassword = Usuario::validarPassword($password, $confirmar);
+            if (!empty($erroresPassword)) {
+                // Si hay múltiples errores, mostrar el primero en el campo password
+                $errores['password'] = $erroresPassword[0];
+                // Si hay error de confirmación, mostrarlo en el campo confirmar
+                foreach ($erroresPassword as $error) {
+                    if (strpos($error, 'coinciden') !== false) {
+                        $errores['confirmar'] = $error;
+                        break;
+                    }
+                }
+            }
+        }
+        
         if (empty(trim($confirmar))) {
             $errores['confirmar'] = "Debe confirmar la contraseña";
-        } elseif ($password !== $confirmar) {
-            $errores['confirmar'] = "Las contraseñas no coinciden";
         }
 
         $sinErrores = true;
@@ -174,10 +187,12 @@ class UsuarioController{
 
             if (empty($password) || empty($confirm)) {
                 $errores[] = "Todos los campos son obligatorios";
-            } elseif ($password !== $confirm) {
-                $errores[] = "Las contraseñas no coinciden";
-            } elseif (strlen($password) < 0) {
-                $errores[] = "La contraseña debe tener al menos 8 caracteres";
+            } else {
+                // Validar contraseña según normativas de la base de datos
+                $erroresPassword = Usuario::validarPassword($password, $confirm);
+                if (!empty($erroresPassword)) {
+                    $errores = array_merge($errores, $erroresPassword);
+                }
             }
 
             if (empty($errores) && $id) {

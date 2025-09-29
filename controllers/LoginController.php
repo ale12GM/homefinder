@@ -21,10 +21,29 @@ class LoginController{
 
             $email_intentado = $postData['email'] ?? ''; // Guardamos el email para los errores y auditoría
 
-            $auth = new Usuario($postData); // Creamos un objeto Usuario con los datos enviados
+            // Verificar bloqueo por cookie primero
+            if (!empty($email_intentado)) {
+                $bloqueoCookie = Usuario::verificarCookieBloqueo($email_intentado);
+                if ($bloqueoCookie['bloqueada']) {
+                    $errores[] = $bloqueoCookie['mensaje'];
+                }
+            }
 
-            // 1. Validar que los campos email y password no estén vacíos.
-            $errores = $auth->validar();
+            // Verificar bloqueo por intentos en base de datos
+            if (!empty($email_intentado) && empty($errores)) {
+                $bloqueoDB = Usuario::verificarBloqueo($email_intentado);
+                if ($bloqueoDB['bloqueada']) {
+                    $errores[] = $bloqueoDB['mensaje'];
+                }
+            }
+
+            // Si no hay bloqueos, continuar con la validación normal
+            if (empty($errores)) {
+                $auth = new Usuario($postData); // Creamos un objeto Usuario con los datos enviados
+
+                // 1. Validar que los campos email y password no estén vacíos.
+                $errores = $auth->validar();
+            }
 
             if (empty($errores)){
                 // 2. Si no hay errores de campos vacíos, verificar si el usuario existe.
@@ -41,14 +60,28 @@ class LoginController{
                     $autenticado = $auth->comprobarPassword($resultadoExisteUsuario);
 
                     if($autenticado){
-                        // 4. Login exitoso: Obtener el ID del usuario y autenticar la sesión.
+                        // 4. Login exitoso: Resetear intentos y autenticar la sesión.
+                        Usuario::resetearIntentos($email_intentado);
                         $auth->obtenerId(); // Esto es para obtener el 'id' y guardarlo en $auth->id
                         $auth->autenticar(); // Inicia la sesión y redirige
                         return; // Se detiene la ejecución después de la redirección.
                     } else {
                         // 5. Login fallido (contraseña incorrecta).
-                        // El método comprobarPassword() ya registró este fallo en AuditoriaApp.
-                        $errores = Usuario::getErrores(); // Obtenemos el mensaje de error "El password es incorrecto"
+                        // Incrementar intentos fallidos
+                        error_log("Login fallido para: " . $email_intentado);
+                        $resultadoIncremento = Usuario::incrementarIntentos($email_intentado);
+                        error_log("Resultado incremento: " . ($resultadoIncremento ? 'true' : 'false'));
+                        
+                        // Verificar si se alcanzó el límite de intentos
+                        $bloqueoDB = Usuario::verificarBloqueo($email_intentado);
+                        if ($bloqueoDB['bloqueada']) {
+                            // Establecer cookie de bloqueo
+                            Usuario::establecerCookieBloqueo($email_intentado);
+                            $errores[] = $bloqueoDB['mensaje'];
+                        } else {
+                            // El método comprobarPassword() ya registró este fallo en AuditoriaApp.
+                            $errores = Usuario::getErrores(); // Obtenemos el mensaje de error "El password es incorrecto"
+                        }
                     }
                 }
             }

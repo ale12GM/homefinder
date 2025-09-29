@@ -32,6 +32,22 @@ class NormativaContrasenia extends ActivaModelo {
         $this->es_activa = $args['es_activa'] ?? null;
         $this->fecha_creacion = $args['fecha_creacion'] ?? null;
     }
+
+    /**
+     * Obtiene la normativa de contraseña activa
+     * @return NormativaContrasenia|null
+     */
+    public static function obtenerNormativaActiva() {
+        $query = "SELECT * FROM " . self::$tabla . " WHERE es_activa = 1 LIMIT 1";
+        $resultado = self::$db->query($query);
+        
+        if ($resultado && $resultado->num_rows > 0) {
+            $normativa = $resultado->fetch_assoc();
+            return new self($normativa);
+        }
+        
+        return null;
+    }
 }
 
 ?>

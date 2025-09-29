@@ -12,7 +12,9 @@ use Controllers\RolController;
 use MVC\Router;
 $router=new Router(); 
 
+$router->get('/login', [LoginController::class, 'login']);
 $router->post('/login', [LoginController::class, 'login']);
+
 
 // --- USUARIO PROPIEDADES ---
 $router->get('/usuario/propiedades', [PropiedadController::class, 'IndexPropiedad']);

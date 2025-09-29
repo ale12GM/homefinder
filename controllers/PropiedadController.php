@@ -3,7 +3,7 @@ namespace Controllers;
 use Model\Propiedad;
 use MVC\Router;
 use Model\Etiqueta;
-use Model\Contactos;
+use Model\Contacto;
 class PropiedadController{
     public static function IndexPropiedad(Router $router){
     // Obtener todas las propiedades
@@ -279,7 +279,7 @@ public static function Crear(Router $router){
                                 'es_principal' => $es_principal
                             ];
                             
-                            $nuevoContacto = new Contactos($contactoData);
+                            $nuevoContacto = new Contacto($contactoData);
                             $nuevoContacto->crear();
                         }
                     }
