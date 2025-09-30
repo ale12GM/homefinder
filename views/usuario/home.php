@@ -37,25 +37,72 @@
       <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-8" style="color: #FEFAE0;">HOME FINDER</h1>
 
       <!-- Barra de búsqueda -->
-      <div class="flex items-center rounded-full shadow-lg w-full max-w-2xl overflow-hidden" style="background-color: #FEFAE0;">
+      <div class="w-full max-w-4xl">
+        <form action="/usuario/propiedades" method="GET" class="flex items-center rounded-full shadow-lg overflow-hidden" style="background-color: #FEFAE0;">
+          
+          <!-- Icono lupa + input de búsqueda -->
+          <div class="flex items-center flex-1">
+            <span class="pl-4 pr-2 text-lg">
+              <svg class="w-5 h-5" style="filter: invert(47%) sepia(21%) saturate(1478%) hue-rotate(352deg) brightness(97%) contrast(85%);" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </span>
+            <input type="text" name="buscar" placeholder="Buscar por ubicación, precio, características..."
+                   class="flex-1 py-3 focus:outline-none" style="color: #DDA15E; background-color: #FEFAE0;">
+          </div>
 
-        <!-- Icono lupa + input -->
-        <div class="flex items-center flex-1">
-          <span class="pl-4 pr-2 text-lg">
-            <img src="../../src/lupa.svg" alt="Lupa" class="w-5 h-5" style="filter: invert(47%) sepia(21%) saturate(1478%) hue-rotate(352deg) brightness(97%) contrast(85%);">
-          </span>
-          <input type="text" placeholder="Buscar hogar..."
-                class="flex-1 py-3 focus:outline-none" style="color: #DDA15E; background-color: #FEFAE0;">
-        </div>
+          <!-- Filtros desplegables -->
+          <div class="flex items-center gap-2 px-2">
+            <!-- Filtro de precio -->
+            <select name="precio_min" class="py-2 px-3 rounded-full border-0 focus:outline-none text-sm" style="color: #DDA15E; background-color: #FEFAE0;">
+              <option value="">Precio min</option>
+              <option value="50000">$50,000</option>
+              <option value="100000">$100,000</option>
+              <option value="200000">$200,000</option>
+              <option value="300000">$300,000</option>
+            </select>
+            
+            <select name="precio_max" class="py-2 px-3 rounded-full border-0 focus:outline-none text-sm" style="color: #DDA15E; background-color: #FEFAE0;">
+              <option value="">Precio max</option>
+              <option value="100000">$100,000</option>
+              <option value="200000">$200,000</option>
+              <option value="300000">$300,000</option>
+              <option value="500000">$500,000</option>
+            </select>
 
-        <!-- Botones -->
-        <div class="flex w-1/4 rounded-full m-1 overflow-hidden transition-all duration-500">
-          <button class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-white font-medium transition-all duration-500 bg-[#DDA15E] hover:flex-[10] hover:gap-3">
-            <img src="../../src/buy.svg" alt="Buy" class="w-5 h-5 transition-all duration-500" style="filter: brightness(0) invert(1);">BUY
+            <!-- Filtro de habitaciones -->
+            <select name="habitaciones" class="py-2 px-3 rounded-full border-0 focus:outline-none text-sm" style="color: #DDA15E; background-color: #FEFAE0;">
+              <option value="">Habitaciones</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+            </select>
+          </div>
+
+          <!-- Botón de búsqueda -->
+          <button type="submit" class="flex items-center gap-2 px-6 py-3 text-white font-medium transition-all duration-500 bg-[#DDA15E] hover:bg-[#BC8A4B]">
+            <svg class="w-4 h-4" style="filter: brightness(0) invert(1);" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <span class="text-sm font-semibold">BUSCAR</span>
           </button>
-          <button class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-white font-medium transition-all duration-500 bg-[#DDA15E] hover:flex-[10] hover:gap-3">
-            <img src="../../src/sell.svg" alt="Sell" class="w-5 h-5 transition-all duration-500" style="filter: brightness(0) invert(1);">SELL
-          </button>
+        </form>
+
+        <!-- Botones de acción rápida -->
+        <div class="flex justify-center gap-4 mt-4">
+          <a href="/usuario/propiedades" class="flex items-center gap-2 px-4 py-2 text-white font-medium transition-all duration-500 bg-[#DDA15E] hover:bg-[#BC8A4B] rounded-full">
+            <svg class="w-4 h-4" style="filter: brightness(0) invert(1);" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="text-sm font-semibold">VER TODAS</span>
+          </a>
+          <a href="/usuario/propiedades/publicar" class="flex items-center gap-2 px-4 py-2 text-white font-medium transition-all duration-500 bg-[#DDA15E] hover:bg-[#BC8A4B] rounded-full">
+            <svg class="w-4 h-4" style="filter: brightness(0) invert(1);" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+            </svg>
+            <span class="text-sm font-semibold">VENDER</span>
+          </a>
         </div>
       </div>
 
@@ -91,7 +138,9 @@
         <!-- Botón centrado dentro de su mitad -->
         <div class="flex justify-center">
           <button class="flex items-center gap-3 px-7 py-3.5 bg-[#B1BCA4] text-[#FEFAE0] text-lg font-semibold rounded-full hover:bg-[#9FA88F] transition">
-            <img src="../../src/telefono.svg" alt="Teléfono" class="w-6 h-6">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6.62 10.79a15.09 15.09 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/>
+            </svg>
             CONTÁCTANOS
           </button>
         </div>
@@ -134,25 +183,37 @@
 
         <!-- Elemento 1 -->
         <div class="flex flex-col items-center space-y-4 p-4">
-          <img src="../../src/comodo.svg" alt="Cómodo" class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);">
+          <svg class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+            <path d="M2 17L12 22L22 17"/>
+            <path d="M2 12L12 17L22 12"/>
+          </svg>
           <p class="text-xl text-gray-800 font-medium">Propiedades cómodas para tu bienestar</p>
         </div>
 
         <!-- Elemento 2 -->
         <div class="flex flex-col items-center space-y-4 p-4">
-          <img src="../../src/ahorrar.svg" alt="Ahorro" class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);">
+          <svg class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20Z"/>
+            <path d="M12.5 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z"/>
+          </svg>
           <p class="text-xl text-gray-800 font-medium">Opciones accesibles para que ahorres</p>
         </div>
 
         <!-- Elemento 3 -->
         <div class="flex flex-col items-center space-y-4 p-4">
-          <img src="../../src/comunicacion.svg" alt="Comunicación" class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);">
+          <svg class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z"/>
+            <path d="M7 9H17V11H7V9ZM7 12H15V14H7V12Z"/>
+          </svg>
           <p class="text-xl text-gray-800 font-medium">Comunicación clara y constante</p>
         </div>
 
         <!-- Elemento 4 -->
         <div class="flex flex-col items-center space-y-4 p-4">
-          <img src="../../src/casa.svg" alt="Calidad" class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);">
+          <svg class="w-24 h-24 mb-2" style="filter: invert(17%) sepia(14%) saturate(1097%) hue-rotate(51deg) brightness(90%) contrast(90%);" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
           <p class="text-xl text-gray-800 font-medium">Casas de calidad garantizada</p>
         </div>
 
@@ -244,23 +305,23 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        <div class="group flex flex-col items-start text-left border-2 rounded-2xl p-8 cursor-pointer transition duration-300 hover:shadow-lg
+        <a href="/usuario/propiedades/publicar" class="group flex flex-col items-start text-left border-2 rounded-2xl p-8 cursor-pointer transition duration-300 hover:shadow-lg
                     border-[#DDA15E] bg-[#FEFAE0] text-[#DDA15E] hover:bg-[#DDA15E] hover:text-[#FEFAE0]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 mb-4 transition-colors duration-300 text-[#DDA15E] group-hover:text-[#FEFAE0]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 3l9 8h-3v9h-12v-9h-3l9-8z"/>
           </svg>
           <h3 class="text-2xl font-bold mb-2">Vender una casa</h3>
           <p class="text-lg">Encuentra el comprador ideal con nuestras amplias listas y asesoría experta.</p>
-        </div>
+        </a>
 
-        <div class="group flex flex-col items-start text-left border-2 rounded-2xl p-8 cursor-pointer transition duration-300 hover:shadow-lg
+        <a href="/usuario/propiedades" class="group flex flex-col items-start text-left border-2 rounded-2xl p-8 cursor-pointer transition duration-300 hover:shadow-lg
                     border-[#DDA15E] bg-[#FEFAE0] text-[#DDA15E] hover:bg-[#DDA15E] hover:text-[#FEFAE0]">
           <!-- Nuevo icono llave-casa -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 mb-4 transition-colors duration-300 text-[#DDA15E] group-hover:text-[#FEFAE0]" fill="currentColor" viewBox="0 0 24 24"><path d="M21.707 11.293l-9-9A1 1 0 0 0 11 2H5a3 3 0 0 0-3 3v6a1 1 0 0 0 .293.707l9 9a1 1 0 0 0 1.414 0l8-8a1 1 0 0 0 0-1.414zM7.5 9.5a2 2 0 1 1 .001-4.001A2 2 0 0 1 7.5 9.5z"/></svg>
 
           <h3 class="text-2xl font-bold mb-2">Comprar una casa</h3>
           <p class="text-lg">Encuentra tu lugar perfecto con nuestras amplias listas y orientación experta.</p>
-        </div>
+        </a>
 
       </div>
     </div>

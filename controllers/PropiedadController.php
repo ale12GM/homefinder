@@ -15,8 +15,58 @@ class PropiedadController{
         return isset($p['estado']) && $p['estado'] === 'activo';
     });
 
+    // Procesar filtros de búsqueda
+    $filtros = [];
+    $buscar = $_GET['buscar'] ?? '';
+    $precio_min = $_GET['precio_min'] ?? '';
+    $precio_max = $_GET['precio_max'] ?? '';
+    $habitaciones = $_GET['habitaciones'] ?? '';
+
+    // Aplicar filtros si existen
+    if (!empty($buscar) || !empty($precio_min) || !empty($precio_max) || !empty($habitaciones)) {
+        $propiedadesFiltradas = array_filter($propiedadesActivas, function($propiedad) use ($buscar, $precio_min, $precio_max, $habitaciones) {
+            $cumpleFiltros = true;
+
+            // Filtro de búsqueda por texto
+            if (!empty($buscar)) {
+                $buscarLower = strtolower($buscar);
+                $cumpleFiltros = $cumpleFiltros && (
+                    stripos($propiedad['titulo'] ?? '', $buscar) !== false ||
+                    stripos($propiedad['direccion'] ?? '', $buscar) !== false ||
+                    stripos($propiedad['descripcion'] ?? '', $buscar) !== false
+                );
+            }
+
+            // Filtro de precio mínimo
+            if (!empty($precio_min) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (float)$propiedad['precio'] >= (float)$precio_min;
+            }
+
+            // Filtro de precio máximo
+            if (!empty($precio_max) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (float)$propiedad['precio'] <= (float)$precio_max;
+            }
+
+            // Filtro de habitaciones
+            if (!empty($habitaciones) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (int)$propiedad['num_habitaciones'] >= (int)$habitaciones;
+            }
+
+            return $cumpleFiltros;
+        });
+
+        $propiedadesActivas = $propiedadesFiltradas;
+        $filtros = [
+            'buscar' => $buscar,
+            'precio_min' => $precio_min,
+            'precio_max' => $precio_max,
+            'habitaciones' => $habitaciones
+        ];
+    }
+
     $router->render('usuario/venta', [
-        'propiedades' => $propiedadesActivas
+        'propiedades' => $propiedadesActivas,
+        'filtros' => $filtros
     ]);
 }
 public static function GestionPropiedades(Router $router){
@@ -32,9 +82,66 @@ public static function GestionPropiedades(Router $router){
 
     $propiedades = Propiedad::listar();
 
+    // Procesar filtros de búsqueda
+    $filtros = [];
+    $buscar = $_GET['buscar'] ?? '';
+    $precio_min = $_GET['precio_min'] ?? '';
+    $precio_max = $_GET['precio_max'] ?? '';
+    $habitaciones = $_GET['habitaciones'] ?? '';
+    $estado = $_GET['estado'] ?? '';
+
+    // Aplicar filtros si existen
+    if (!empty($buscar) || !empty($precio_min) || !empty($precio_max) || !empty($habitaciones) || !empty($estado)) {
+        $propiedadesFiltradas = array_filter($propiedades, function($propiedad) use ($buscar, $precio_min, $precio_max, $habitaciones, $estado) {
+            $cumpleFiltros = true;
+
+            // Filtro de búsqueda por texto
+            if (!empty($buscar)) {
+                $buscarLower = strtolower($buscar);
+                $cumpleFiltros = $cumpleFiltros && (
+                    stripos($propiedad['titulo'] ?? '', $buscar) !== false ||
+                    stripos($propiedad['direccion'] ?? '', $buscar) !== false ||
+                    stripos($propiedad['descripcion'] ?? '', $buscar) !== false
+                );
+            }
+
+            // Filtro de precio mínimo
+            if (!empty($precio_min) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (float)$propiedad['precio'] >= (float)$precio_min;
+            }
+
+            // Filtro de precio máximo
+            if (!empty($precio_max) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (float)$propiedad['precio'] <= (float)$precio_max;
+            }
+
+            // Filtro de habitaciones
+            if (!empty($habitaciones) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && (int)$propiedad['num_habitaciones'] >= (int)$habitaciones;
+            }
+
+            // Filtro de estado
+            if (!empty($estado) && $cumpleFiltros) {
+                $cumpleFiltros = $cumpleFiltros && ($propiedad['estado'] ?? '') === $estado;
+            }
+
+            return $cumpleFiltros;
+        });
+
+        $propiedades = $propiedadesFiltradas;
+        $filtros = [
+            'buscar' => $buscar,
+            'precio_min' => $precio_min,
+            'precio_max' => $precio_max,
+            'habitaciones' => $habitaciones,
+            'estado' => $estado
+        ];
+    }
+
     $router->render('admin/gestion_de_propiedades',[
         'propiedades'=> $propiedades,
-        'permisos' => $permisosUsuario
+        'permisos' => $permisosUsuario,
+        'filtros' => $filtros
     ]);
 }
 
@@ -69,195 +176,42 @@ public static function Crear(Router $router){
     $propiedades = new Propiedad();
     $etiquetas = Etiqueta::listar();
     
-    // Variables de error inicializadas vacías
-    $error_titulo        = "";
-    $error_direccion     = "";
-    $error_superficie    = "";
-    $error_latitud       = "";
-    $error_longitud      = "";
-    $error_habitaciones  = "";
-    $error_banos         = "";
-    $error_precio        = "";
-    $error_descripcion   = "";
-    $error_estado        = "";
-    $error_imagen        = "";
-    $error_etiquetas     = "";
-    $error_contactos     = "";
+    // Inicializar array de errores
+    $errores = [];
 
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Obtener datos del formulario
-        $titulo        = trim($_POST['propiedades']['titulo'] ?? '');
-        $direccion     = trim($_POST['propiedades']['direccion'] ?? '');
-        $superficie    = trim($_POST['propiedades']['superficie_total'] ?? '');
-        $latitud       = trim($_POST['propiedades']['latitud'] ?? '');
-        $longitud      = trim($_POST['propiedades']['longitud'] ?? '');
-        $habitaciones  = $_POST['propiedades']['num_habitaciones'] ?? null;
-        $banos         = $_POST['propiedades']['num_banos'] ?? null;
-        $precio        = trim($_POST['propiedades']['precio'] ?? '');
-        $descripcion   = trim($_POST['propiedades']['descripcion'] ?? '');
-        $estado        = trim($_POST['propiedades']['estado'] ?? '');
+        $datos_propiedad = $_POST['propiedades'] ?? [];
         $etiquetas_ids = $_POST['etiquetas'] ?? [];
         $contactos_data = $_POST['contactos'] ?? [];
-        $imagen_file   = $_FILES['propiedades'] ?? null;
+        $imagen_file = $_FILES['propiedades'] ?? null;
 
-        // --- Validaciones obligatorias ---
-
-        // Título
-        if ($titulo === '') {
-            $error_titulo = "El título es obligatorio.";
-        } elseif (mb_strlen($titulo) > 50) {
-            $error_titulo = "El título no puede exceder 50 caracteres.";
-        }
-
-
-        // Dirección
-        if ($direccion === '') {
-            $error_direccion = "La dirección es obligatoria.";
-        } elseif (mb_strlen($direccion) > 255) {
-            $error_direccion = "La dirección no puede exceder 255 caracteres.";
-        }
-
-        // Superficie
-        if ($superficie === '') {
-            $error_superficie = "La superficie es obligatoria.";
-        } elseif (!is_numeric($superficie)) {
-            $error_superficie = "La superficie debe ser un número.";
-        } elseif ((float)$superficie < 0) {
-            $error_superficie = "La superficie no puede ser negativa.";
-        } else {
-            $superficie = number_format((float)$superficie, 2, '.', '');
-        }
-
-        // Latitud
-        if ($latitud !== '') {
-            if (!is_numeric($latitud)) {
-                $error_latitud = "La latitud debe ser numérica.";
-            } else {
-                $latitud = number_format((float)$latitud, 6, '.', '');
-            }
-        }
-
-        // Longitud
-        if ($longitud !== '') {
-            if (!is_numeric($longitud)) {
-                $error_longitud = "La longitud debe ser numérica.";
-            } else {
-                $longitud = number_format((float)$longitud, 6, '.', '');
-            }
-        }
-
-        // Habitaciones
-        if ($habitaciones !== null && $habitaciones !== '') {
-            if (filter_var($habitaciones, FILTER_VALIDATE_INT) === false) {
-                $error_habitaciones = "Número de habitaciones inválido.";
-            } elseif ((int)$habitaciones < 0) {
-                $error_habitaciones = "El número de habitaciones no puede ser negativo.";
-            } else {
-                $habitaciones = (int)$habitaciones;
-            }
-        } else {
-            $habitaciones = null;
-        }
-
-        // Baños
-        if ($banos !== null && $banos !== '') {
-            if (filter_var($banos, FILTER_VALIDATE_INT) === false) {
-                $error_banos = "Número de baños inválido.";
-            } elseif ((int)$banos < 0) {
-                $error_banos = "El número de baños no puede ser negativo.";
-            } else {
-                $banos = (int)$banos;
-            }
-        } else {
-            $banos = null;
-        }
-
-        // Precio
-        if ($precio === '') {
-            $error_precio = "El precio es obligatorio.";
-        } elseif (!is_numeric($precio)) {
-            $error_precio = "El precio debe ser un número.";
-        } elseif ((float)$precio < 0) {
-            $error_precio = "El precio no puede ser negativo.";
-        } else {
-            $precio = number_format((float)$precio, 2, '.', '');
-        }
-
-        // Descripción
-        if ($descripcion === '') {
-            $error_descripcion = "La descripción es obligatoria.";
-        } elseif (mb_strlen($descripcion) > 500) {
-            $error_descripcion = "La descripción no puede exceder 500 caracteres.";
-        }
-
-        // Estado (opcional)
-        if ($estado !== '' && mb_strlen($estado) > 15) {
-            $error_estado = "El estado no puede exceder 15 caracteres.";
-        }
-
-        // Etiquetas (opcional)
+        // Validar datos usando el modelo
+        $errores = Propiedad::validarDatos($datos_propiedad, $contactos_data, $imagen_file);
+        
+        // Validar etiquetas (opcional)
         if (!empty($etiquetas_ids)) {
             foreach ($etiquetas_ids as $etiqueta_id) {
                 if (!ctype_digit(strval($etiqueta_id))) {
-                    $error_etiquetas = "Una o más etiquetas son inválidas.";
+                    $errores['etiquetas'] = "Una o más etiquetas son inválidas.";
                     break;
                 }
             }
-        }
-
-        // Contactos (opcional)
-        if (!empty($contactos_data)) {
-            $contactos_validos = 0;
-            $tiene_principal = false;
-            
-            foreach ($contactos_data as $index => $contacto) {
-                $tipo = trim($contacto['tipo_contacto'] ?? '');
-                $valor = trim($contacto['valor'] ?? '');
-                $es_principal = isset($contacto['es_principal']) ? 1 : 0;
-                
-                // Validar que tenga tipo y valor
-                if (!empty($tipo) && !empty($valor)) {
-                    $contactos_validos++;
-                    if ($es_principal) {
-                        $tiene_principal = true;
-                    }
-                    
-                    // Validar formato según tipo
-                    if ($tipo === 'email' && !filter_var($valor, FILTER_VALIDATE_EMAIL)) {
-                        $error_contactos = "El email no tiene un formato válido.";
-                        break;
-                    }
-                } elseif (!empty($tipo) || !empty($valor)) {
-                    $error_contactos = "Todos los campos de contacto deben estar completos.";
-                    break;
-                }
-            }
-            
-            // Si hay contactos válidos, debe haber al menos uno principal
-            if ($contactos_validos > 0 && !$tiene_principal) {
-                $error_contactos = "Debe seleccionar al menos un contacto como principal.";
-            }
-        }
-
-        // Imagen (obligatoria)
-        if (!$imagen_file || $imagen_file['error']['imagen'] !== UPLOAD_ERR_OK) {
-            $error_imagen = "Debes subir una imagen.";
         }
 
         // Verificar si hay errores
-        $hay_errores = !empty($error_titulo) || !empty($error_direccion) || 
-                      !empty($error_superficie) || !empty($error_latitud) || !empty($error_longitud) || 
-                      !empty($error_habitaciones) || !empty($error_banos) || !empty($error_precio) || 
-                      !empty($error_descripcion) || !empty($error_estado) || !empty($error_imagen) || 
-                      !empty($error_etiquetas) || !empty($error_contactos);
+        $hay_errores = !empty($errores);
 
         if (!$hay_errores) {
+            // Formatear datos usando el modelo
+            $datos_formateados = Propiedad::formatearDatos($datos_propiedad);
+            
             // Si no hay errores, procesar la imagen y crear la propiedad
             $nombre_imagen = $_FILES['propiedades']['name']['imagen'];
             $ubicacion = __DIR__ . '/../public/img/' . $nombre_imagen;
             move_uploaded_file($_FILES['propiedades']['tmp_name']['imagen'], $ubicacion);
             
-            $propiedades = new Propiedad($_POST['propiedades']);
+            $propiedades = new Propiedad($datos_formateados);
             $propiedades->setImagen($nombre_imagen);
             $resultado = $propiedades->crear();
             
@@ -295,19 +249,7 @@ public static function Crear(Router $router){
     $router->render('usuario/publicar_propiedad', [
         'propiedades' => $propiedades,
         'etiquetas' => $etiquetas,
-        'error_titulo' => $error_titulo,
-        'error_direccion' => $error_direccion,
-        'error_superficie' => $error_superficie,
-        'error_latitud' => $error_latitud,
-        'error_longitud' => $error_longitud,
-        'error_habitaciones' => $error_habitaciones,
-        'error_banos' => $error_banos,
-        'error_precio' => $error_precio,
-        'error_descripcion' => $error_descripcion,
-        'error_estado' => $error_estado,
-        'error_imagen' => $error_imagen,
-        'error_etiquetas' => $error_etiquetas,
-        'error_contactos' => $error_contactos
+        'errores' => $errores ?? []
     ]);
 }
 public static function EditarPropiedad(Router $router){

@@ -186,7 +186,7 @@ public static function EditarUsuario(Router $router) {
 
         header('Location: /admin/gestion_de_usuarios?mensaje=' . ($resultado ? 'actualizado' : 'error'));
         exit;
-    }
+    }   
 
     // Si llega por GET (por ejemplo si abres una página aparte)
     $id = $_GET['id'] ?? null;

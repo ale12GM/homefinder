@@ -25,7 +25,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <!-- Logo -->
       <div>
         <a href="#hero"> <!-- Apunta a la sección hero para "Inicio" -->
-          <img src="../../src/logo.svg" alt="Logo" class="h-10">
+          <svg class="h-10 w-10 text-[#a66933]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
         </a>
       </div>
 
@@ -41,14 +43,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
   <ul class="flex flex-col md:flex-row gap-6 md:gap-8">
     <li><a href="/usuario/home" class="hover:text-[#a66933]">Inicio</a></li>
     
-    <?php if (isset($_SESSION['roles']) && in_array("Usuario", $_SESSION['roles'])): ?>
-      <!-- Menú para administradores -->
-      <li><a href="/usuario/home#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
-      <li><a href="/usuario/home#contacto" class="hover:text-[#a66933]">Contacto</a></li>
+    <?php if (isset($_SESSION['roles']) && in_array("Administrador", $_SESSION['roles'])): ?>
+      <!-- Menú para usuarios normales -->
+      <li><a href="/admin/gestion_de_usuarios" class="hover:text-[#a66933]">Usuarios</a></li>
+      <li><a href="/admin/roles" class="hover:text-[#a66933]">Roles</a></li>
+      <li><a href="/admin/propiedades" class="hover:text-[#a66933]">Propiedades</a></li>
       <?php else: ?>
-        <!-- Menú para usuarios normales -->
-        <li><a href="/admin/gestion_de_usuarios" class="hover:text-[#a66933]">Usuarios</a></li>
-        <li><a href="/admin/roles" class="hover:text-[#a66933]">Roles</a></li>
+        <li><a href="/usuario/home#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
+        <li><a href="/usuario/home#contacto" class="hover:text-[#a66933]">Contacto</a></li>
+        <!-- Menú para administradores -->
     <?php endif; ?>
     
     <li><a href="/usuario/propiedades/publicar" class="hover:text-[#a66933]">Vender</a></li>
@@ -75,7 +78,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 <div class="relative inline-block text-left">
   <button id="avatarBtn" type="button" 
     class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#DDA15E]">
-    <img src="https://i.pravatar.cc/100" alt="Usuario" class="w-full h-full object-cover">
+    <svg class="w-full h-full object-cover bg-gray-200" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
   </button>
 </div>
 
@@ -93,9 +98,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 
     <!-- Foto y nombre -->
     <div class="flex flex-col items-center mb-4">
-      <img src="https://via.placeholder.com/80" 
-           alt="Foto usuario" 
-           class="w-20 h-20 rounded-full border-4 border-gray-200 shadow">
+      <div class="w-20 h-20 rounded-full border-4 border-gray-200 shadow bg-gray-200 flex items-center justify-center">
+        <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </div>
       <h2 class="mt-2 text-lg font-bold text-[#DDA15E]">
         <?php echo htmlspecialchars($_SESSION['usuario'] ?? 'Invitado'); ?>
         <?php if (isset($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
@@ -122,7 +129,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
      <form action="" method="post">
     <input type="hidden" name="cerrar">
     <button type="submit" class="block w-full text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition mt-4">
-      Cerrar Secion
+      Cerrar Sesión
     </button>
   </form>
     </div>
@@ -142,8 +149,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 
     <!-- Foto y nombre -->
     <div class="flex flex-col items-center mb-5">
-      <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FEFAE0] shadow">
-        <img src="https://i.pravatar.cc/150?img=3" alt="Usuario" class="w-full h-full object-cover">
+      <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FEFAE0] shadow bg-gray-200 flex items-center justify-center">
+        <svg class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
       </div>
       <h2 class="mt-2 text-lg font-semibold text-[#5B674D]">
         <?php echo htmlspecialchars($_SESSION['usuario']); ?>
@@ -311,7 +320,9 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
     
     <!-- Logo -->
     <div class="flex items-center justify-center md:justify-start gap-3">
-      <img src="image_logo.png" alt="Logo" class="max-w-full max-h-full w-16 h-16 object-contain">
+      <svg class="w-16 h-16 text-[#FEFAE0]" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
     </div>
 
     <!-- Contenido -->
@@ -357,7 +368,7 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
 
     <script>
         // Toggle the menu visibility when the hamburger button is clicked
-        document.getElementById('menuButton').addEventListener('click', () => {
+        document.getElementById('menu-btn').addEventListener('click', () => {
             const menu = document.getElementById('menu');
             menu.classList.toggle('hidden');
         });
