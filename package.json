@@ -11,5 +11,9 @@
     "NPM"
   ],
   "author": "Yanet Colque",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "composer": "^4.1.0",
+    "vendor": "^1.7.0"
+  }
 }

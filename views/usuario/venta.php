@@ -182,7 +182,7 @@ session_start();
       flex-shrink: 0;
     }
   </style>
-</head>
+</head> 
 <body class="bg-gray-100">
 
 <main class="p-4">

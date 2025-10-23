@@ -6,6 +6,7 @@ use Controllers\UsuarioController;
 use Controllers\EtiquetaController;
 use Controllers\LoginController;
 use Controllers\PropiedadEtiquetaController;
+use Controllers\ContactoController;
 use Model\Propiedad;
 use Model\Usuario;
 use Controllers\RolController;
@@ -87,6 +88,9 @@ $router->get('/usuarios/bloquear', [UsuarioController::class, 'bloquearUsuario']
 // para AJAX:
 $router->get('/usuarios/obtener', [UsuarioController::class, 'Obtener']);
 $router->post('/usuarios/actualizarPerfil', [UsuarioController::class, 'actualizarPerfil']);
+
+// Contacto
+$router->post('/contacto/enviar', [ContactoController::class, 'enviar']);
 
 //$router->get('/producto/crear', [ProductController::class, 'crear']);
 $router->ComprobarRutas();

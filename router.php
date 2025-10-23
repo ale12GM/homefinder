@@ -46,6 +46,13 @@ class Router{
         $contenido=ob_get_clean();
         include_once __DIR__ ."/views/layout.php";
     }
+    
+    public function renderAuth(string $ubicacion, array $datos = []): void{
+        foreach($datos as $key => $value){
+            $$key = $value;
+        }
+        include __DIR__ ."/views/{$ubicacion}.php";
+    }
 }
 
 ?>

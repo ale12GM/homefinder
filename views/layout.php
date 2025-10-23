@@ -303,17 +303,17 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
     </div>
   </header>
 
-  <script>
-    const menuBtn = document.getElementById("menu-btn");
-    const menu = document.getElementById("menu");
-    menuBtn.addEventListener("click", () => {
-      menu.classList.toggle("hidden");
-    });
-  </script>
     <main class="">
         <?php echo $contenido; ?>
     </main>
 
+    <?php 
+    // No mostrar footer en páginas de autenticación
+    $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
+    $isAuthPage = strpos($currentUrl, '/login') !== false || strpos($currentUrl, '/singUp') !== false;
+    ?>
+    
+    <?php if (!$isAuthPage): ?>
     <!-- Footer -->
 <footer class="bg-[#535E46] text-[#FEFAE0] py-12 px-8 mt-16 font-[Poppins]">
   <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -364,13 +364,19 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
     © 2025 Home Finder — Todos los derechos reservados.
   </div>
 </footer>
-
+    <?php endif; ?>
 
     <script>
         // Toggle the menu visibility when the hamburger button is clicked
-        document.getElementById('menu-btn').addEventListener('click', () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menu-btn');
             const menu = document.getElementById('menu');
-            menu.classList.toggle('hidden');
+            
+            if (menuBtn && menu) {
+                menuBtn.addEventListener('click', function() {
+                    menu.classList.toggle('hidden');
+                });
+            }
         });
     </script>
 </body>

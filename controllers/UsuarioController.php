@@ -8,7 +8,7 @@ class UsuarioController{
     public static function Index(Router $router){
     
         $usuarios = Usuario::listar();
-        $router->render('auth/login',[
+        $router->renderAuth('auth/login',[
             'usuarios' => $usuarios
         ]);
     }
@@ -138,7 +138,7 @@ class UsuarioController{
         }
     }
 
-    $router->render('auth/singUP', [
+    $router->renderAuth('auth/singUp', [
         'usuarios'=> $Usuario,
         'errores' => $errores
     ]);
