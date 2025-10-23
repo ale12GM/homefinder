@@ -69,6 +69,129 @@ class Propiedad extends ActivaModelo {
         return $contactos_formateados;
     }
 
+    public static function findAllContactos(int $id_propiedad) : array{
+        // Escapar el ID para prevenir inyección SQL
+        $id_propiedad = self::$db->escape_string($id_propiedad);
+        
+        $queryUsuario = "SELECT id_usuario FROM " . static::$tabla . " WHERE id = '{$id_propiedad}'";
+        $resultadoUsuario = self::$db->query($queryUsuario);
+
+        if(!$resultadoUsuario || $resultadoUsuario->num_rows===0){
+            return ['error' =>'Propiedad no encontrada o sin usuario asociado. ID buscado: ' . $id_propiedad];
+        }
+        
+        $propiedad = $resultadoUsuario->fetch_assoc();
+        $usuarioId = $propiedad['id_usuario'];
+        
+        // Debug: verificar que se obtuvo el usuario correcto
+        error_log("Propiedad ID: {$id_propiedad}, Usuario ID: {$usuarioId}");
+
+        $queryContactos = "SELECT tipo_contacto, valor, es_principal FROM contacto WHERE id_usuario = '{$usuarioId}' ORDER BY es_principal DESC, tipo_contacto ASC";
+        $resultadoContactos = self::$db->query($queryContactos);
+
+        $contactos_raw =[];
+
+        if($resultadoContactos){
+            $contactos_raw = $resultadoContactos->fetch_all(MYSQLI_ASSOC);
+            error_log("Contactos encontrados: " . count($contactos_raw));
+        } else {
+            // Si hay error en la consulta, devolver información de debug
+            return ['error' => 'Error en consulta de contactos: ' . self::$db->error . ' | Usuario ID: ' . $usuarioId];
+        }
+        
+        $contactos_principales = [];
+        $contactos_secundarios = [];
+        
+        foreach($contactos_raw as $contacto){
+            if($contacto['es_principal'] == 1){
+                $contactos_principales[] = $contacto;
+            } else {
+                $contactos_secundarios[] = $contacto;
+            }
+        }
+        
+        return [
+            'principales' => $contactos_principales,
+            'secundarios' => $contactos_secundarios,
+            'todos' => $contactos_raw,
+            'debug' => [
+                'propiedad_id' => $id_propiedad,
+                'usuario_id' => $usuarioId,
+                'total_contactos' => count($contactos_raw)
+            ]
+        ];
+    }
+
+    /**
+     * Busca propiedades con filtros específicos
+     * @param array $filtros Filtros de búsqueda (precio_min, precio_max, habitaciones, texto)
+     * @return array Array de propiedades que coinciden con los filtros
+     */
+    public static function buscarConFiltros($filtros) {
+        $where = [];
+        $params = [];
+        
+        // Filtro por precio mínimo
+        if (!empty($filtros['precio_min'])) {
+            $where[] = "precio >= ?";
+            $params[] = $filtros['precio_min'];
+        }
+        
+        // Filtro por precio máximo
+        if (!empty($filtros['precio_max'])) {
+            $where[] = "precio <= ?";
+            $params[] = $filtros['precio_max'];
+        }
+        
+        // Filtro por número de habitaciones
+        if (!empty($filtros['habitaciones'])) {
+            $where[] = "num_habitaciones >= ?";
+            $params[] = $filtros['habitaciones'];
+        }
+        
+        // Filtro por texto de búsqueda
+        if (!empty($filtros['texto'])) {
+            $where[] = "(titulo LIKE ? OR direccion LIKE ? OR descripcion LIKE ?)";
+            $searchTerm = '%' . $filtros['texto'] . '%';
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+        
+        // Construir la consulta
+        $query = "SELECT * FROM " . static::$tabla;
+        if (!empty($where)) {
+            $query .= " WHERE " . implode(" AND ", $where);
+        }
+        $query .= " ORDER BY fecha_publicacion DESC";
+        
+        // Preparar la consulta
+        $stmt = self::$db->prepare($query);
+        if (!$stmt) {
+            return ['error' => 'Error al preparar la consulta: ' . self::$db->error];
+        }
+        
+        // Ejecutar con parámetros
+        if (!empty($params)) {
+            $types = str_repeat('s', count($params)); // Todos los parámetros como string
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        if (!$stmt->execute()) {
+            return ['error' => 'Error al ejecutar la consulta: ' . $stmt->error];
+        }
+        
+        $result = $stmt->get_result();
+        $propiedades = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $propiedades[] = $row;
+        }
+        
+        $stmt->close();
+        return $propiedades;
+    }
+
     /**
      * Valida los datos de una propiedad
      * @param array $datos Datos a validar

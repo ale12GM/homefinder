@@ -354,16 +354,61 @@ public static function verDetalleContacto(Router $router) {//ojo
     $id_propiedad = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
     
     if (!$id_propiedad) {
-        
+        if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'ID de propiedad no válido']);
+            exit;
+        }
         header('Location: /venta');
         exit;
     }
-    $contactos = Propiedad::findConContactos($id_propiedad);
+    
+    // Asegurar que la conexión a la base de datos esté disponible
+    if (!isset(Propiedad::$db)) {
+        require_once __DIR__ . '/../includes/app.php';
+    }
+    
+    $contactos = Propiedad::findAllContactos($id_propiedad);
+    
+    // Si es una petición AJAX, devolver JSON
+    if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+        header('Content-Type: application/json');
+        echo json_encode($contactos);
+        exit;
+    }
 
     $router->render('usuario/detalleContacto', [
         'contactos' => $contactos,
         'id_propiedad' => $id_propiedad
     ]);
+}
+
+public static function buscarPropiedades(Router $router) {
+    // Asegurar que la conexión a la base de datos esté disponible
+    if (!isset(Propiedad::$db)) {
+        require_once __DIR__ . '/../includes/app.php';
+    }
+    
+    // Obtener parámetros de búsqueda
+    $filtros = [
+        'texto' => $_GET['texto'] ?? '',
+        'precio_min' => $_GET['precio_min'] ?? '',
+        'precio_max' => $_GET['precio_max'] ?? '',
+        'habitaciones' => $_GET['habitaciones'] ?? ''
+    ];
+    
+    // Limpiar filtros vacíos
+    $filtros = array_filter($filtros, function($value) {
+        return $value !== '';
+    });
+    
+    // Realizar búsqueda
+    $resultado = Propiedad::buscarConFiltros($filtros);
+    
+    // Devolver resultado como JSON
+    header('Content-Type: application/json');
+    echo json_encode($resultado);
+    exit;
 }
 
 }

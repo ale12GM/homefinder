@@ -1,5 +1,39 @@
 <?php 
 
+// Función para crear un elemento de contacto
+function crearItemContacto($contacto, $esPrincipal) {
+    $iconos = [
+        'email' => '📧',
+        'telefono' => '📞',
+        'whatsapp' => '📱',
+        'facebook' => '📘',
+        'instagram' => '📷'
+    ];
+    
+    $icono = $iconos[$contacto['tipo_contacto']] ?? '📞';
+    $clasePrincipal = $esPrincipal ? 'bg-green-50 border-l-4 border-[#5B674D] pl-4' : 'bg-gray-50';
+    $etiquetaPrincipal = $esPrincipal ? ' (Principal)' : '';
+    
+    $enlace = '';
+    if ($contacto['tipo_contacto'] === 'email') {
+        $enlace = 'href="mailto:' . htmlspecialchars($contacto['valor']) . '"';
+    } else if ($contacto['tipo_contacto'] === 'telefono' || $contacto['tipo_contacto'] === 'whatsapp') {
+        $enlace = 'href="tel:' . htmlspecialchars($contacto['valor']) . '"';
+    } else {
+        $enlace = 'href="' . htmlspecialchars($contacto['valor']) . '" target="_blank"';
+    }
+    
+    return '
+        <div class="flex items-center space-x-3 p-3 rounded-lg border border-[#DDA15E] ' . $clasePrincipal . '">
+            <span class="text-xl">' . $icono . '</span>
+            <div>
+                <p class="font-semibold text-gray-800">' . ucfirst($contacto['tipo_contacto']) . $etiquetaPrincipal . ':</p>
+                <a ' . $enlace . ' class="text-[#DDA15E] hover:underline">' . htmlspecialchars($contacto['valor']) . '</a>
+            </div>
+        </div>
+    ';
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,30 +53,33 @@
         <div class="space-y-4">
             <?php 
             if (isset($contactos) && !empty($contactos) && !isset($contactos['error'])) { 
-            ?>
-                <?php if (isset($contactos['email'])) { ?>
-                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border border-[#DDA15E]">
-                        <span class="text-xl">📧</span>
-                        <div>
-                            <p class="font-semibold text-gray-800">Correo Electrónico:</p>
-                            <a href="mailto:<?php echo $contactos['email']; ?>" class="text-[#DDA15E] hover:underline"><?php echo $contactos['email']; ?></a>
-                        </div>
-                    </div>
-                <?php } ?>
+                // Mostrar contactos principales primero
+                if (isset($contactos['principales']) && !empty($contactos['principales'])) {
+                    echo '<h3 class="text-lg font-semibold text-[#5B674D] mb-3">Contactos Principales</h3>';
+                    foreach($contactos['principales'] as $contacto) {
+                        echo crearItemContacto($contacto, true);
+                    }
+                }
                 
-                <?php if (isset($contactos['telefono'])) { ?>
-                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border border-[#DDA15E]">
-                        <span class="text-xl">📞</span>
-                        <div>
-                            <p class="font-semibold text-gray-800">Teléfono:</p>
-                            <a href="tel:<?php echo $contactos['telefono']; ?>" class="text-[#DDA15E] hover:underline"><?php echo $contactos['telefono']; ?></a>
-                        </div>
-                    </div>
-                <?php } ?>
-
-            <?php } else { ?>
+                // Luego mostrar contactos secundarios
+                if (isset($contactos['secundarios']) && !empty($contactos['secundarios'])) {
+                    echo '<h3 class="text-lg font-semibold text-[#5B674D] mb-3 mt-6">Otros Contactos</h3>';
+                    foreach($contactos['secundarios'] as $contacto) {
+                        echo crearItemContacto($contacto, false);
+                    }
+                }
+                
+                // Si no hay contactos en ninguna categoría
+                if ((!isset($contactos['principales']) || empty($contactos['principales'])) && 
+                    (!isset($contactos['secundarios']) || empty($contactos['secundarios']))) {
+                    echo '<p class="text-red-500 font-semibold p-4 border border-red-300 bg-red-50 rounded-lg">
+                        Lo sentimos, no se encontraron datos de contacto para esta propiedad.
+                    </p>';
+                }
+            } else { 
+            ?>
                 <p class="text-red-500 font-semibold p-4 border border-red-300 bg-red-50 rounded-lg">
-                    Lo sentimos, no se encontraron datos de contacto principales para esta propiedad.
+                    Lo sentimos, no se encontraron datos de contacto para esta propiedad.
                 </p>
             <?php } ?>
         </div>
