@@ -3,7 +3,7 @@
         'name' => 'proyecto/mvc',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '0d109bc0a7c7ade0a3c737e2ffcfd8d21522ce1e',
+        'reference' => 'fbb09b67bb21aa1bbbda91251f22ce4278cd51f2',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'guzzlehttp/psr7' => array(
-            'pretty_version' => '2.7.0',
-            'version' => '2.7.0.0',
-            'reference' => 'a70f5c95fb43bc83f07c9c948baa0dc1829bf201',
+            'pretty_version' => '2.8.0',
+            'version' => '2.8.0.0',
+            'reference' => '21dc724a0583619cd1652f673303492272778051',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
             'aliases' => array(),
@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'phpmailer/phpmailer' => array(
-            'pretty_version' => 'v6.9.1',
-            'version' => '6.9.1.0',
-            'reference' => '039de174cd9c17a8389754d3b877a2ed22743e18',
+            'pretty_version' => 'v6.10.0',
+            'version' => '6.10.0.0',
+            'reference' => 'bf74d75a1fde6beaa34a0ddae2ec5fce0f72a144',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
@@ -40,7 +40,7 @@
         'proyecto/mvc' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '0d109bc0a7c7ade0a3c737e2ffcfd8d21522ce1e',
+            'reference' => 'fbb09b67bb21aa1bbbda91251f22ce4278cd51f2',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

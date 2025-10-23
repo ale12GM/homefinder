@@ -13,6 +13,200 @@
       font-family: 'Poppins', sans-serif;
       background-color: #FEFAE0;
     }
+    /* Animaciones sutiles y no invasivas acordes al diseño */
+    :root{
+      --accent:#535E46;
+    }
+
+    /* Transiciones generales */
+    input[type="text"], select, button {
+      transition: box-shadow 200ms ease, transform 150ms ease, background-color 200ms ease;
+    }
+
+    /* Filas principales: ligero levantamiento al hover */
+    table tbody tr:not(.detail-row) {
+      transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+    table tbody tr:not(.detail-row):hover {
+      transform: translateY(-3px);
+      background-color: #fbfbf9;
+      box-shadow: 0 6px 16px rgba(83,94,70,0.06);
+    }
+
+    /* (detalle inline removido — ahora usamos modal para mostrar la información) */
+
+    /* Estilo sutil para botones (consistencia con diseño) */
+    .toggle-detail {
+      transition: color 150ms ease, transform 120ms ease;
+    }
+    .toggle-detail:focus, .toggle-detail:hover {
+      transform: translateY(-1px);
+      outline: none;
+      text-decoration: none;
+    }
+
+    /* Respetar preferencia de reducir movimiento */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+      .detail-row .detail-inner {
+        max-height: none;
+        opacity: 1;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+    }
+
+    /* Estilo personalizado para selects */
+    .custom-select-wrapper {
+      position: relative;
+      user-select: none;
+    }
+    
+    .custom-select {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .custom-select-trigger {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      background: white;
+      cursor: pointer;
+      border: 1px solid #E2E4E0;
+      border-radius: 9999px;
+      transition: all 200ms ease;
+    }
+    
+    .custom-select-trigger:hover {
+      border-color: #535E46;
+    }
+    
+    .custom-select.open .custom-select-trigger {
+      border-color: #535E46;
+      box-shadow: 0 0 0 2px rgba(83,94,70,0.2);
+    }
+    
+    .custom-options {
+      position: absolute;
+      display: block;
+      top: 100%;
+      left: 0;
+      right: 0;
+      border: 1px solid #E2E4E0;
+      border-radius: 1rem;
+      background: white;
+      transition: all 200ms ease;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: 0.5rem;
+      z-index: 50;
+    }
+    
+    .custom-select.open .custom-options {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+    
+    .custom-option {
+      position: relative;
+      display: block;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    
+    .custom-option:first-child {
+      border-radius: 1rem 1rem 0 0;
+    }
+    
+    .custom-option:last-child {
+      border-radius: 0 0 1rem 1rem;
+    }
+    
+    .custom-option:hover {
+      background: #F3F4F6;
+      color: #535E46;
+    }
+    
+    .custom-option.selected {
+      color: #535E46;
+      background: #F3F4F6;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .custom-select-trigger,
+      .custom-options,
+      .custom-option {
+        transition: none !important;
+      }
+    }
+
+    /* Modal de detalle */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.35);
+      z-index: 60;
+      padding: 24px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(15,23,42,0.15);
+      transform: translateY(6px) scale(.99);
+      opacity: 0;
+      transition: transform 300ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease;
+      overflow: hidden;
+    }
+    .modal-backdrop.open .modal-content {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eef2e7;
+    }
+    .modal-body {
+      padding: 18px 20px 24px;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .modal-content { transition: none !important; }
+    }
   </style>
 </head>
 <body class="text-gray-800">
@@ -46,57 +240,121 @@
           <!-- Filtros -->
           <div class="flex flex-wrap gap-2">
             <!-- Filtro de precio mínimo -->
-            <select name="precio_min" class="py-2 px-3 rounded-full border border-[#E2E4E0] focus:outline-none focus:ring-2 focus:ring-[#535E46]/50 text-sm">
-              <option value="">Precio min</option>
-              <option value="50000" <?php echo (($_GET['precio_min'] ?? '') == '50000') ? 'selected' : ''; ?>>$50,000</option>
-              <option value="100000" <?php echo (($_GET['precio_min'] ?? '') == '100000') ? 'selected' : ''; ?>>$100,000</option>
-              <option value="200000" <?php echo (($_GET['precio_min'] ?? '') == '200000') ? 'selected' : ''; ?>>$200,000</option>
-              <option value="300000" <?php echo (($_GET['precio_min'] ?? '') == '300000') ? 'selected' : ''; ?>>$300,000</option>
-            </select>
+            <div class="custom-select-wrapper">
+              <div class="custom-select" data-value="<?php echo $_GET['precio_min'] ?? ''; ?>">
+                <input type="hidden" name="precio_min" value="<?php echo $_GET['precio_min'] ?? ''; ?>">
+                <div class="custom-select-trigger">
+                  <span class="text-sm">
+                    <?php 
+                      $precio_min = $_GET['precio_min'] ?? '';
+                      echo $precio_min ? '$'.number_format($precio_min) : 'Precio min';
+                    ?>
+                  </span>
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M6 8l4 4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="custom-options">
+                  <span class="custom-option" data-value="">Precio min</span>
+                  <span class="custom-option" data-value="50000">$50,000</span>
+                  <span class="custom-option" data-value="100000">$100,000</span>
+                  <span class="custom-option" data-value="200000">$200,000</span>
+                  <span class="custom-option" data-value="300000">$300,000</span>
+                </div>
+              </div>
+            </div>
             
             <!-- Filtro de precio máximo -->
-            <select name="precio_max" class="py-2 px-3 rounded-full border border-[#E2E4E0] focus:outline-none focus:ring-2 focus:ring-[#535E46]/50 text-sm">
-              <option value="">Precio max</option>
-              <option value="100000" <?php echo (($_GET['precio_max'] ?? '') == '100000') ? 'selected' : ''; ?>>$100,000</option>
-              <option value="200000" <?php echo (($_GET['precio_max'] ?? '') == '200000') ? 'selected' : ''; ?>>$200,000</option>
-              <option value="300000" <?php echo (($_GET['precio_max'] ?? '') == '300000') ? 'selected' : ''; ?>>$300,000</option>
-              <option value="500000" <?php echo (($_GET['precio_max'] ?? '') == '500000') ? 'selected' : ''; ?>>$500,000</option>
-            </select>
+            <div class="custom-select-wrapper">
+              <div class="custom-select" data-value="<?php echo $_GET['precio_max'] ?? ''; ?>">
+                <input type="hidden" name="precio_max" value="<?php echo $_GET['precio_max'] ?? ''; ?>">
+                <div class="custom-select-trigger">
+                  <span class="text-sm">
+                    <?php 
+                      $precio_max = $_GET['precio_max'] ?? '';
+                      echo $precio_max ? '$'.number_format($precio_max) : 'Precio max';
+                    ?>
+                  </span>
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M6 8l4 4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="custom-options">
+                  <span class="custom-option" data-value="">Precio max</span>
+                  <span class="custom-option" data-value="100000">$100,000</span>
+                  <span class="custom-option" data-value="200000">$200,000</span>
+                  <span class="custom-option" data-value="300000">$300,000</span>
+                  <span class="custom-option" data-value="500000">$500,000</span>
+                </div>
+              </div>
+            </div>
 
             <!-- Filtro de habitaciones -->
-            <select name="habitaciones" class="py-2 px-3 rounded-full border border-[#E2E4E0] focus:outline-none focus:ring-2 focus:ring-[#535E46]/50 text-sm">
-              <option value="">Habitaciones</option>
-              <option value="1" <?php echo (($_GET['habitaciones'] ?? '') == '1') ? 'selected' : ''; ?>>1+</option>
-              <option value="2" <?php echo (($_GET['habitaciones'] ?? '') == '2') ? 'selected' : ''; ?>>2+</option>
-              <option value="3" <?php echo (($_GET['habitaciones'] ?? '') == '3') ? 'selected' : ''; ?>>3+</option>
-              <option value="4" <?php echo (($_GET['habitaciones'] ?? '') == '4') ? 'selected' : ''; ?>>4+</option>
-            </select>
+            <div class="custom-select-wrapper">
+              <div class="custom-select" data-value="<?php echo $_GET['habitaciones'] ?? ''; ?>">
+                <input type="hidden" name="habitaciones" value="<?php echo $_GET['habitaciones'] ?? ''; ?>">
+                <div class="custom-select-trigger">
+                  <span class="text-sm">
+                    <?php 
+                      $habitaciones = $_GET['habitaciones'] ?? '';
+                      echo $habitaciones ? $habitaciones . '+' : 'Habitaciones';
+                    ?>
+                  </span>
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M6 8l4 4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="custom-options">
+                  <span class="custom-option" data-value="">Habitaciones</span>
+                  <span class="custom-option" data-value="1">1+</span>
+                  <span class="custom-option" data-value="2">2+</span>
+                  <span class="custom-option" data-value="3">3+</span>
+                  <span class="custom-option" data-value="4">4+</span>
+                </div>
+              </div>
+            </div>
 
             <!-- Filtro de estado -->
-            <select name="estado" class="py-2 px-3 rounded-full border border-[#E2E4E0] focus:outline-none focus:ring-2 focus:ring-[#535E46]/50 text-sm">
-              <option value="">Estado</option>
-              <option value="activo" <?php echo (($_GET['estado'] ?? '') == 'activo') ? 'selected' : ''; ?>>Activo</option>
-              <option value="inactivo" <?php echo (($_GET['estado'] ?? '') == 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
-            </select>
+            <div class="custom-select-wrapper">
+              <div class="custom-select" data-value="<?php echo $_GET['estado'] ?? ''; ?>">
+                <input type="hidden" name="estado" value="<?php echo $_GET['estado'] ?? ''; ?>">
+                <div class="custom-select-trigger">
+                  <span class="text-sm">
+                    <?php 
+                      $estado = $_GET['estado'] ?? '';
+                      echo $estado ? ucfirst($estado) : 'Estado';
+                    ?>
+                  </span>
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M6 8l4 4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="custom-options">
+                  <span class="custom-option" data-value="">Estado</span>
+                  <span class="custom-option" data-value="activo">Activo</span>
+                  <span class="custom-option" data-value="inactivo">Inactivo</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Botones de acción -->
           <div class="flex gap-2">
-            <button type="submit" class="bg-[#535E46] text-white px-4 py-2 rounded-full text-sm hover:bg-[#3f4736] transition flex items-center gap-2">
+            <button type="submit" class="bg-[#535E46] text-white px-4 py-2 rounded-full text-sm hover:bg-[#3f4736] transition-transform transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#535E46]/30 flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18.5a7.5 7.5 0 006.15-3.85z"/>
               </svg>
               Buscar
             </button>
             
-            <a href="/admin/propiedades" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm hover:bg-gray-300 transition flex items-center gap-2">
+            <a href="/admin/propiedades" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm hover:bg-gray-300 transition-transform transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300/40 flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
               Limpiar
             </a>
             
-            <a href="/usuario/propiedades/publicar" class="bg-[#DDA15E] text-white px-4 py-2 rounded-full text-sm hover:bg-[#BC8A4B] transition flex items-center gap-2">
+            <a href="/usuario/propiedades/publicar" class="bg-[#DDA15E] text-white px-4 py-2 rounded-full text-sm hover:bg-[#BC8A4B] transition-transform transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#DDA15E]/30 flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
               </svg>
@@ -145,108 +403,257 @@
               <?php echo round($p['precio'])?> $
             </td>
             <td class="px-3 py-2 flex items-center gap-2">
-              <button type="button" 
-                      class="toggle-detail text-[#535E46] hover:underline" 
-                      aria-expanded="false">
+              <?php
+                // Verificar permisos para acciones (mismo criterio que antes)
+                $puedeEditar = in_array('editar_todas_propiedades', $permisos) ||
+                              (in_array('editar_propiedad_propia', $permisos) && $p['id_usuario'] == $_SESSION['id']);
+                $puedeEliminar = in_array('eliminar_todas_propiedades', $permisos) ||
+                                (in_array('eliminar_propiedad_propia', $permisos) && $p['id_usuario'] == $_SESSION['id']);
+
+                // Preparar datos esenciales para el modal (escapados)
+                $data_prop = htmlspecialchars(json_encode([
+                  'id' => $uid,
+                  'titulo' => $p['titulo'] ?? '',
+                  'descripcion' => $p['descripcion'] ?? '',
+                  'direccion' => $p['direccion'] ?? '',
+                  'precio' => round($p['precio'] ?? 0),
+                  'superficie' => round($p['superficie_total'] ?? 0),
+                  'habitaciones' => $p['num_habitaciones'] ?? '',
+                  'banos' => $p['num_banos'] ?? '',
+                  'latitud' => $p['latitud'] ?? '',
+                  'longitud' => $p['longitud'] ?? '',
+                  'imagen' => $p['imagen'] ?? '',
+                  'puedeEditar' => $puedeEditar,
+                  'puedeEliminar' => $puedeEliminar,
+                  'editUrl' => '/admin/propiedades/editar?id=' . $uid,
+                  'deleteUrl' => '/usuario/mispropiedades/eliminar?id=' . $uid
+                ]), ENT_QUOTES);
+              ?>
+              <button type="button"
+                      class="open-modal toggle-detail text-[#535E46] hover:underline"
+                      aria-expanded="false"
+                      data-prop='<?php echo $data_prop; ?>'>
                 👁 Ver Detalle
               </button>
             </td>
           </tr>
 
-          <!-- fila de detalle (inicialmente oculta) -->
-          <tr class="detail-row hidden bg-gray-50">
-            <td colspan="4" class="px-4 py-4">
-              <div class="flex gap-4">
-                <!-- imagen -->
-                <div class="w-32 h-24 bg-gray-200 rounded overflow-hidden flex-shrink-0">
-                  <?php if(!empty($p['imagen'])): ?>
-                    <img src="/img/<?= $p['imagen'] ?>" 
-                         alt="Imagen propiedad" 
-                         class="w-full h-full object-cover">
-                  <?php else: ?>
-                    <div class="w-full h-full flex items-center justify-center text-xs text-gray-500">Sin imagen</div>
-                  <?php endif; ?>
-                </div>
-
-                <!-- info -->
-                <div class="flex-1">
-                  <h3 class="text-sm font-semibold text-[#535E46]">
-                    <?php echo htmlspecialchars($p['titulo'], ENT_QUOTES) ?>
-                  </h3>
-                  <p class="text-xs text-gray-400 mt-1">
-                    <?php echo nl2br(htmlspecialchars($p['direccion'], ENT_QUOTES)) ?>
-                  </p>
-                  <p class="text-sm text-gray-600 mt-1">
-                    <?php echo nl2br(htmlspecialchars($p['descripcion'], ENT_QUOTES)) ?>
-                  </p>
-                  <p class="mt-3 font-bold">
-                    Precio: <span class="text-[#535E46]"><?php echo round($p['precio']) ?></span> $
-                  </p>
-                  <p class="mt-3 font-bold">
-                    Superficie: <span class="text-[#535E46]"><?php echo round($p['superficie_total']) ?></span> 
-                  </p>
-                  <p class="mt-3 font-bold">
-                    Latitud: <span class="text-[#535E46]"><?php echo round($p['latitud']) ?></span> 
-                  </p>
-                  <p class="mt-3 font-bold">
-                    Longitud: <span class="text-[#535E46]"><?php echo round($p['longitud']) ?></span> 
-                  </p>
-                  <div class="flex items-center gap-4 mt-2 text-gray-600 text-sm">
-                    <span>🛏️ <?php echo $p['num_habitaciones'] ?> Habitaciones</span>
-                    <span>🚿 <?php echo $p['num_banos'] ?> Baños</span>
-                  </div>
-
-                  <div class="mt-4 flex gap-2">
-                    <?php 
-                    // Verificar permisos para editar
-                    $puedeEditar = in_array('editar_todas_propiedades', $permisos) || 
-                                  (in_array('editar_propiedad_propia', $permisos) && $p['id_usuario'] == $_SESSION['id']);
-                    
-                    // Verificar permisos para eliminar
-                    $puedeEliminar = in_array('eliminar_todas_propiedades', $permisos) || 
-                                    (in_array('eliminar_propiedad_propia', $permisos) && $p['id_usuario'] == $_SESSION['id']);
-                    ?>
-                    
-                    <?php if ($puedeEditar): ?>
-                      <a href="/admin/propiedades/editar?id=<?php echo $uid ?>" 
-                         class="px-3 py-1 rounded-full border text-sm hover:bg-gray-100 transition">
-                         ✏️ Editar
-                      </a>
-                    <?php endif; ?>
-
-                    <?php if ($puedeEliminar): ?>
-                      <a href="/usuario/mispropiedades/eliminar?id=<?= $uid ?>" 
-                         class="px-3 py-1 rounded-full border text-sm text-red-600 hover:bg-red-100 transition">
-                         Bloquear
-                      </a>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
+            <!-- detalle ahora mostrado en modal; eliminada la fila expandible -->
           <?php endforeach; ?>
         </tbody>
       </table>
     </div>
 
+            <!-- Modal global para mostrar detalle -->
+            <div id="prop-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+              <div class="modal-content" role="document">
+                <div class="modal-header">
+                  <h3 id="modal-title" class="text-lg font-semibold text-[#535E46]">Detalle</h3>
+                  <button class="modal-close" aria-label="Cerrar">✖</button>
+                </div>
+                <div class="modal-body">
+                  <div class="flex gap-4">
+                    <div class="w-48 h-32 bg-gray-100 rounded overflow-hidden flex-shrink-0" id="modal-image-wrap">
+                      <img id="modal-image" src="" alt="Imagen" class="w-full h-full object-cover hidden">
+                      <div id="modal-no-image" class="w-full h-full flex items-center justify-center text-xs text-gray-400">Sin imagen</div>
+                    </div>
+                    <div class="flex-1">
+                      <p id="modal-direccion" class="text-xs text-gray-400"></p>
+                      <p id="modal-descripcion" class="mt-2 text-sm text-gray-700"></p>
+                      <p class="mt-3 font-bold">Precio: <span id="modal-precio" class="text-[#535E46]"></span> $</p>
+                      <div class="mt-2 text-sm text-gray-600">
+                        <span id="modal-superficie"></span>
+                        <span id="modal-habitaciones" class="ml-4"></span>
+                        <span id="modal-banos" class="ml-4"></span>
+                      </div>
+                      <div class="mt-3 text-sm text-gray-500">
+                        <span id="modal-latitud"></span>
+                        <span id="modal-longitud" class="ml-4"></span>
+                      </div>
+                      <div id="modal-actions" class="mt-4 flex gap-2"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
     <!-- Script para expandir/ocultar detalle -->
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.toggle-detail').forEach(function(btn){
-        btn.addEventListener('click', function(){
-          const tr = this.closest('tr');
-          const detail = tr.nextElementSibling;
-          if (!detail) return;
+      // Detectar si el usuario prefiere reducir movimiento
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-          detail.classList.toggle('hidden');
+      // Los botones de detalle ahora abren un modal; no usamos la fila inline.
 
-          // Accesibilidad
-          const expanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', (!expanded).toString());
+      // Modal global: abrir/llenar/cerrar
+      const modal = document.getElementById('prop-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalImage = document.getElementById('modal-image');
+      const modalImageWrap = document.getElementById('modal-image-wrap');
+      const modalNoImage = document.getElementById('modal-no-image');
+      const modalDireccion = document.getElementById('modal-direccion');
+      const modalDescripcion = document.getElementById('modal-descripcion');
+      const modalPrecio = document.getElementById('modal-precio');
+      const modalSuperficie = document.getElementById('modal-superficie');
+      const modalHabitaciones = document.getElementById('modal-habitaciones');
+      const modalBanos = document.getElementById('modal-banos');
+      const modalCloseBtn = modal.querySelector('.modal-close');
+      let lastFocused = null;
 
-          // Cambiar texto
-          this.textContent = expanded ? "👁 Ver Detalle" : "✖ Ocultar";
+      function openModal(data, openerBtn){
+        // llenar campos
+        modalTitle.textContent = data.titulo || 'Detalle';
+        if (data.imagen) {
+          modalImage.src = '/img/' + data.imagen;
+          modalImage.classList.remove('hidden');
+          modalNoImage.classList.add('hidden');
+        } else {
+          modalImage.classList.add('hidden');
+          modalNoImage.classList.remove('hidden');
+        }
+        modalDireccion.textContent = data.direccion || '';
+        modalDescripcion.textContent = data.descripcion || '';
+        modalPrecio.textContent = data.precio || '';
+        modalSuperficie.textContent = data.superficie ? ('Superficie: ' + data.superficie) : '';
+        modalHabitaciones.textContent = data.habitaciones ? (data.habitaciones + ' habitaciones') : '';
+        modalBanos.textContent = data.banos ? (data.banos + ' baños') : '';
+        document.getElementById('modal-latitud').textContent = data.latitud ? ('Latitud: ' + data.latitud) : '';
+        document.getElementById('modal-longitud').textContent = data.longitud ? ('Longitud: ' + data.longitud) : '';
+
+        // acciones
+        const actionsWrap = document.getElementById('modal-actions');
+        actionsWrap.innerHTML = '';
+        if (data.puedeEditar) {
+          const a = document.createElement('a');
+          a.href = data.editUrl || '#';
+          a.className = 'px-3 py-1 rounded-full border text-sm hover:bg-gray-100 transition-transform transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#535E46]/30';
+          a.textContent = '✏️ Editar';
+          actionsWrap.appendChild(a);
+        }
+        if (data.puedeEliminar) {
+          const b = document.createElement('a');
+          b.href = data.deleteUrl || '#';
+          b.className = 'px-3 py-1 rounded-full border text-sm text-red-600 hover:bg-red-100 transition-transform transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-200';
+          b.textContent = 'Bloquear';
+          actionsWrap.appendChild(b);
+        }
+
+        // accesibilidad y mostrar
+        lastFocused = openerBtn || document.activeElement;
+        modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('open');
+        // poner foco en el modal close
+        modalCloseBtn.focus();
+      }
+
+      function closeModal(){
+        modal.setAttribute('aria-hidden', 'true');
+        modal.classList.remove('open');
+        if (lastFocused) lastFocused.focus();
+      }
+
+      // Abrir modal al click en botones .open-modal
+      document.querySelectorAll('.open-modal').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          let raw = this.getAttribute('data-prop');
+          if (!raw) return;
+          try {
+            const data = JSON.parse(raw);
+            openModal(data, this);
+          } catch(err){
+            console.error('JSON parse error for prop data:', err);
+          }
+        });
+      });
+
+      // Cerrar modal por boton
+      modalCloseBtn.addEventListener('click', function(){ closeModal(); });
+
+      // Cerrar por click en overlay (si click fuera del contenido)
+      modal.addEventListener('click', function(e){
+        if (e.target === modal) closeModal();
+      });
+
+      // Cerrar con ESC
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') {
+          if (modal.classList.contains('open')) {
+            closeModal();
+          }
+          // Cerrar cualquier select abierto
+          document.querySelectorAll('.custom-select.open').forEach(select => {
+            select.classList.remove('open');
+          });
+        }
+      });
+
+      // Inicializar Custom Selects
+      document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+        const select = wrapper.querySelector('.custom-select');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+        const options = wrapper.querySelectorAll('.custom-option');
+        const triggerText = trigger.querySelector('span');
+
+        // Marcar opción seleccionada inicialmente
+        const currentValue = select.getAttribute('data-value');
+        options.forEach(option => {
+          if (option.getAttribute('data-value') === currentValue) {
+            option.classList.add('selected');
+          }
+        });
+
+        // Toggle del select
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          
+          // Cerrar otros selects abiertos
+          document.querySelectorAll('.custom-select.open').forEach(otherSelect => {
+            if (otherSelect !== select) otherSelect.classList.remove('open');
+          });
+          
+          select.classList.toggle('open');
+        });
+
+        // Selección de opción
+        options.forEach(option => {
+          option.addEventListener('click', () => {
+            // Actualizar valor seleccionado
+            const value = option.getAttribute('data-value');
+            const text = option.textContent;
+            
+            // Actualizar input oculto
+            if (hiddenInput) hiddenInput.value = value;
+            
+            // Actualizar texto visible
+            triggerText.textContent = text;
+            
+            // Actualizar clases
+            options.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            
+            // Cerrar dropdown
+            select.classList.remove('open');
+            
+            // Disparar evento change para compatibilidad con forms
+            hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        });
+
+        // Soporte de teclado
+        trigger.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            select.classList.toggle('open');
+          }
+        });
+      });
+
+      // Cerrar dropdowns al hacer click fuera
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select.open').forEach(select => {
+          select.classList.remove('open');
         });
       });
     });

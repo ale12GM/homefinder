@@ -125,10 +125,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Editar
       </button>
-      <a href="/seguridad" 
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
-         Seguridad
-      </a>
+ 
       <a href="/usuario/mispropiedades" 
          class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
          Ver Propiedades
