@@ -16,7 +16,7 @@ session_start();
     .modal-exit { opacity: 1; transform: translateY(0); }
     .modal-exit-active { opacity: 0; transform: translateY(-20px); transition: all 0.3s ease-in; }
   </style>
-</head>
+</head> 
 <body class="bg-gray-100">
 
 <main class="p-4">

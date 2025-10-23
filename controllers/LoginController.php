@@ -54,7 +54,7 @@ class LoginController{
             }
 
         }
-        $router->render('auth/login',[
+        $router->renderAuth('auth/login',[
             'errores' => $errores,
             'email' => $email_intentado // Para pre-llenar el campo email si hubo un error
         ]);

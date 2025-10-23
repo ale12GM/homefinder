@@ -1,0 +1,209 @@
+############################################
+# 🔧 ARCHIVOS DE SISTEMA / SO
+############################################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+############################################
+# 🧠 CONFIGURACIONES DE EDITORES / IDE
+############################################
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
+
+############################################
+# 🧰 ENTORNOS / DEPENDENCIAS
+############################################
+# Node.js / JavaScript / TypeScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+.next/
+out/
+coverage/
+.nyc_output/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+*.manifest
+*.spec
+
+# Java / Maven / Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+target/
+.gradle/
+build/
+out/
+
+# C / C++
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.out
+*.lo
+*.lai
+*.slo
+
+# C#
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+*.user
+*.suo
+*.pdb
+*.mdb
+*.dbmdl
+*.jfm
+*.vspscc
+_ReSharper*/
+*.DotSettings.user
+
+# PHP / Laravel
+/vendor/
+composer.lock
+.env
+.env.*
+Homestead.yaml
+Homestead.json
+.idea/
+
+# Ruby / Rails
+.bundle/
+vendor/bundle/
+log/
+tmp/
+db/*.sqlite3
+db/*.sqlite3-journal
+public/system/
+.byebug_history
+
+############################################
+# 📄 BASES DE DATOS / CONFIGURACIONES
+############################################
+*.sql
+*.sqlite
+*.db
+*.db3
+*.mdb
+*.accdb
+
+############################################
+# 🧩 ARCHIVOS TEMPORALES / LOGS
+############################################
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+
+############################################
+# 🔒 ARCHIVOS SENSIBLES
+############################################
+*.env
+.env.*
+*.key
+*.pem
+*.crt
+*.csr
+*.p12
+*.keystore
+*.jks
+*.secret
+secrets.json
+config.local.*
+credentials.*
+
+############################################
+# 🧪 TEST / COBERTURA
+############################################
+coverage/
+.jest/
+reports/
+test-output/
+cucumber-html-reports/
+.allure-results/
+allure-report/
+
+############################################
+# 🧍 CONTENIDO PERSONAL / DOCUMENTACIÓN LOCAL
+############################################
+*.docx
+*.xlsx
+*.pptx
+*.pdf
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+############################################
+# 🖼️ ASSETS PESADOS TEMPORALES
+############################################
+*.psd
+*.ai
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.ogg
+
+############################################
+# ⚙️ CONFIGURACIONES DE CONTENEDORES / CI
+############################################
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+.dockerignore
+.gitlab-ci-local.yml

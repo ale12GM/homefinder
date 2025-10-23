@@ -50,23 +50,9 @@
         </div>
       </div>
 
-      <!-- Latitud y Longitud -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Latitud:</label>
-          <input type="text" name="propiedades[latitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
-          <?php if (!empty($error_latitud)): ?>
-            <p class="text-red-500 text-sm mt-1"><?php echo $error_latitud; ?></p>
-          <?php endif; ?>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Longitud:</label>
-          <input type="text" name="propiedades[longitud]" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#5B674D] focus:border-[#5B674D]" />
-          <?php if (!empty($error_longitud)): ?>
-            <p class="text-red-500 text-sm mt-1"><?php echo $error_longitud; ?></p>
-          <?php endif; ?>
-        </div>
-      </div> 
+      <!-- Hidden fields for latitud and longitud (set to null) -->
+      <input type="hidden" name="propiedades[latitud]" value="">
+      <input type="hidden" name="propiedades[longitud]" value=""> 
 
       <!-- Habitaciones y Baños -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
