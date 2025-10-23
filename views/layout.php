@@ -23,13 +23,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
     <div class="container mx-auto flex justify-between items-center px-6 py-4">
       
       <!-- Logo -->
-      <div>
-        <a href="#hero"> <!-- Apunta a la sección hero para "Inicio" -->
-          <svg class="h-10 w-10 text-[#a66933]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-          </svg>
-        </a>
-      </div>
+ <!-- Logo -->
+<!-- Logo -->
+<!-- Logo -->
+<div class="flex items-center">
+  <a href="/" class="flex items-center">
+    <img 
+      src="/img/logo.png" 
+      alt="Home Finder logo" 
+      class="h-20 w-auto md:h-24 lg:h-28 object-contain transition-transform duration-300 hover:scale-105 -m-3"
+    >
+  </a>
+</div>
+
+
 
       <!-- Botón menú móvil -->
       <button id="menu-btn" class="md:hidden text-[#4d5c3d] focus:outline-none">
@@ -41,7 +48,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <!-- Menú navegación -->
 <nav id="menu" class="hidden md:flex md:items-center md:space-x-8 font-bold text-[#d29057] absolute md:static top-16 left-0 w-full md:w-auto bg-white md:bg-transparent p-6 md:p-0 shadow-md md:shadow-none">
   <ul class="flex flex-col md:flex-row gap-6 md:gap-8">
-    <li><a href="/usuario/home" class="hover:text-[#a66933]">Inicio</a></li>
+    <li><a href="/" class="hover:text-[#a66933]">Inicio</a></li>
     
     <?php if (isset($_SESSION['roles']) && in_array("Administrador", $_SESSION['roles'])): ?>
       <!-- Menú para usuarios normales -->
@@ -49,8 +56,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <li><a href="/admin/roles" class="hover:text-[#a66933]">Roles</a></li>
       <li><a href="/admin/propiedades" class="hover:text-[#a66933]">Propiedades</a></li>
       <?php else: ?>
-        <li><a href="/usuario/home#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
-        <li><a href="/usuario/home#contacto" class="hover:text-[#a66933]">Contacto</a></li>
+        <li><a href="/#sobre-nosotros" class="hover:text-[#a66933]">Sobre Nosotros</a></li>
+        <li><a href="/#contacto" class="hover:text-[#a66933]">Contacto</a></li>
         <!-- Menú para administradores -->
     <?php endif; ?>
     
@@ -85,11 +92,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 </div>
 
 <!-- Overlay del menú perfil -->
-<div id="overlayPerfil" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40">
+<div id="overlayPerfil" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ease-in-out">
 
   <!-- Menú desplegable -->
   <div id="menuUser" 
-       class="absolute right-4 top-4 w-64 bg-white border rounded-2xl shadow-2xl p-10 z-50">
+       class="absolute right-4 top-4 w-64 bg-white border rounded-2xl shadow-2xl p-10 z-50 transform transition-all duration-300 ease-in-out translate-y-[-100%] opacity-0">
 
     <!-- Botón cerrar -->
     <button id="closeMenu" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
@@ -138,8 +145,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 
 <!-- Overlay del modal editar perfil -->
 <!-- Overlay del modal editar perfil -->
-<div id="overlayEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40">
-  <div id="modalEditar" class="absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50">
+<div id="overlayEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ease-in-out">
+  <div id="modalEditar" class="absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50 transform transition-all duration-300 ease-in-out scale-95 opacity-0">
     
     <!-- Botón cerrar -->
     <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg">✕</button>
@@ -233,12 +240,33 @@ document.getElementById('overlayEditar')?.addEventListener('click', (e) => {
 document.querySelector('#form-editar-perfil button[onclick="cerrarModal()"]')?.addEventListener('click', cerrarModal);
 
 // Avatar menu
-document.getElementById('avatarBtn')?.addEventListener('click', () => document.getElementById('overlayPerfil').classList.remove('hidden'));
-document.getElementById('closeMenu')?.addEventListener('click', () => document.getElementById('overlayPerfil').classList.add('hidden'));
+document.getElementById('avatarBtn')?.addEventListener('click', () => {
+  const overlay = document.getElementById('overlayPerfil');
+  const menu = document.getElementById('menuUser');
+  overlay.classList.remove('hidden');
+  // Forzar un reflow para que la transición funcione
+  void overlay.offsetWidth;
+  overlay.classList.add('opacity-100');
+  menu.classList.remove('translate-y-[-100%]', 'opacity-0');
+});
+
+document.getElementById('closeMenu')?.addEventListener('click', () => {
+  const overlay = document.getElementById('overlayPerfil');
+  const menu = document.getElementById('menuUser');
+  overlay.classList.remove('opacity-100');
+  menu.classList.add('translate-y-[-100%]', 'opacity-0');
+  setTimeout(() => overlay.classList.add('hidden'), 300);
+});
 
 // Editar perfil
 document.getElementById('btnEditar')?.addEventListener('click', async () => {
-  document.getElementById('overlayEditar').classList.remove('hidden');
+  const overlay = document.getElementById('overlayEditar');
+  const modal = document.getElementById('modalEditar');
+  overlay.classList.remove('hidden');
+  // Forzar un reflow para que la transición funcione
+  void overlay.offsetWidth;
+  overlay.classList.add('opacity-100');
+  modal.classList.remove('scale-95', 'opacity-0');
   try {
     const response = await fetch(`/usuarios/obtener?id=${document.getElementById('editar-id').value}`);
     const data = await response.json();
@@ -254,7 +282,11 @@ document.getElementById('btnEditar')?.addEventListener('click', async () => {
 
 // Cerrar modales
 function cerrarModal() {
-  document.getElementById('overlayEditar').classList.add('hidden');
+  const overlay = document.getElementById('overlayEditar');
+  const modal = document.getElementById('modalEditar');
+  overlay.classList.remove('opacity-100');
+  modal.classList.add('scale-95', 'opacity-0');
+  setTimeout(() => overlay.classList.add('hidden'), 300);
 }
 
 // Validación de contraseñas
@@ -303,17 +335,17 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
     </div>
   </header>
 
+  <script>
+    const menuBtn = document.getElementById("menu-btn");
+    const menu = document.getElementById("menu");
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  </script>
     <main class="">
         <?php echo $contenido; ?>
     </main>
 
-    <?php 
-    // No mostrar footer en páginas de autenticación
-    $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
-    $isAuthPage = strpos($currentUrl, '/login') !== false || strpos($currentUrl, '/singUp') !== false;
-    ?>
-    
-    <?php if (!$isAuthPage): ?>
     <!-- Footer -->
 <footer class="bg-[#535E46] text-[#FEFAE0] py-12 px-8 mt-16 font-[Poppins]">
   <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -330,8 +362,8 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
       <h3 class="font-bold mb-4 text-[#FEFAE0]">Contenido</h3>
       <ul class="space-y-2">
         <li><a href="#" class="hover:text-white transition">Inicio</a></li>
-        <li><a href="#" class="hover:text-white transition">Sobre Nosotros</a></li>
-        <li><a href="#" class="hover:text-white transition">Contacto</a></li>
+        <li><a href="#sobre-nosotros" class="hover:text-white transition">Sobre Nosotros</a></li>
+        <li><a href="#contacto" class="hover:text-white transition">Contacto</a></li>
         <li><a href="#" class="hover:text-white transition">Vender</a></li>
         <li><a href="#" class="hover:text-white transition">Comprar</a></li>
       </ul>
@@ -364,19 +396,13 @@ document.getElementById('form-editar-perfil')?.addEventListener('submit', async 
     © 2025 Home Finder — Todos los derechos reservados.
   </div>
 </footer>
-    <?php endif; ?>
+
 
     <script>
         // Toggle the menu visibility when the hamburger button is clicked
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuBtn = document.getElementById('menu-btn');
+        document.getElementById('menu-btn').addEventListener('click', () => {
             const menu = document.getElementById('menu');
-            
-            if (menuBtn && menu) {
-                menuBtn.addEventListener('click', function() {
-                    menu.classList.toggle('hidden');
-                });
-            }
+            menu.classList.toggle('hidden');
         });
     </script>
 </body>
