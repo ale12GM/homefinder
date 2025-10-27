@@ -18,11 +18,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Animación del modal de perfil (suave, no invasiva) */
+      /* Animación del modal de perfil (suave, ligeramente más lenta) */
       .modal-panel {
-        transform: translateY(12px) scale(0.98);
+        transform: translateY(16px) scale(0.98);
         opacity: 0;
-        transition: transform 320ms cubic-bezier(.16,1,.3,1), opacity 260ms ease;
+        /* Hacemos la animación más lenta para que se note: 480ms para transform, 420ms para opacity */
+        transition: transform 900ms cubic-bezier(.16,1,.3,1), opacity 420ms ease;
         will-change: transform, opacity;
       }
 
@@ -32,8 +33,40 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
         opacity: 1;
       }
 
+      /* Aumentar ligeramente la duración del fade del overlay para que acompañe al panel */
+      #overlayEditar, #overlayPerfil {
+        transition: opacity 480ms ease-in-out !important;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .modal-panel { transition: none !important; }
+      }
+    </style>
+    <style>
+      /* Botones del perfil: animaciones sutiles coherentes con el diseño */
+      .btn-animate {
+        transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease, background-color 180ms ease;
+        will-change: transform, box-shadow;
+      }
+      .btn-animate:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(83,94,70,0.08);
+      }
+      .btn-animate:active {
+        transform: translateY(0) scale(0.985);
+      }
+      .btn-animate:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(221,161,94,0.12);
+      }
+
+      /* Asegurar foco visible para teclado sin los anillos azules del navegador */
+      .btn-animate:focus-visible {
+        box-shadow: 0 0 0 4px rgba(221,161,94,0.18);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .btn-animate { transition: none !important; }
       }
     </style>
 </head>
@@ -118,7 +151,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
        class="absolute right-4 top-4 w-64 bg-white border rounded-2xl shadow-2xl p-10 z-50 transform transition-all duration-300 ease-in-out translate-y-[-100%] opacity-0">
 
     <!-- Botón cerrar -->
-    <button id="closeMenu" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
+    <button id="closeMenu" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 btn-animate">
       ✕
     </button>
 
@@ -140,18 +173,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
     <!-- Opciones -->
     <div class="flex flex-col gap-3">
       
-      <button id="btnEditar"
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
+    <button id="btnEditar"
+      class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full btn-animate">
          Editar
       </button>
  
-      <a href="/usuario/mispropiedades" 
-         class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full ">
+    <a href="/usuario/mispropiedades" 
+      class="block text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full btn-animate">
          Ver Propiedades
       </a>
      <form action="" method="post">
     <input type="hidden" name="cerrar">
-    <button type="submit" class="block w-full text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition mt-4">
+    <button type="submit" class="block w-full text-center bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full hover:bg-green-700 transition mt-4 btn-animate">
       Cerrar Sesión
     </button>
   </form>
@@ -165,7 +198,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
   <div id="modalEditar" class="modal-panel absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50 transform transition-all duration-300 ease-in-out scale-95 opacity-0">
     
     <!-- Botón cerrar -->
-    <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg">✕</button>
+  <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg btn-animate">✕</button>
     
     <!-- Título -->
     <h2 class="text-xl font-bold text-left text-[#DDA15E] mb-4">Editar Perfil</h2>
@@ -217,11 +250,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <!-- Botones -->
       <div class="flex gap-2 mt-4">
         <button type="button" onclick="cerrarModal()" 
-                class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-full ">
+                class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-full btn-animate">
           Cancelar
         </button>
         <button type="submit" 
-                class="flex-1 bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full">
+                class="flex-1 bg-[#5B674D] text-[#FEFAE0] py-2 rounded-full btn-animate">
           Guardar
         </button>
       </div>
@@ -271,7 +304,7 @@ document.getElementById('closeMenu')?.addEventListener('click', () => {
   const menu = document.getElementById('menuUser');
   overlay.classList.remove('opacity-100');
   menu.classList.add('translate-y-[-100%]', 'opacity-0');
-  setTimeout(() => overlay.classList.add('hidden'), 300);
+  setTimeout(() => overlay.classList.add('hidden'), 480);
 });
 
 // Editar perfil
@@ -302,7 +335,7 @@ function cerrarModal() {
   const modal = document.getElementById('modalEditar');
   overlay.classList.remove('opacity-100');
   modal.classList.add('scale-95', 'opacity-0');
-  setTimeout(() => overlay.classList.add('hidden'), 300);
+  setTimeout(() => overlay.classList.add('hidden'), 480);
 }
 
 // Validación de contraseñas
