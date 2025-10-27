@@ -51,6 +51,9 @@
       }
       .role-row { transform: none !important; opacity: 1 !important; }
     }
+      /* Add-role modal panel animation */
+      #add-role-panel { transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 200ms ease; transform: translateY(12px); opacity: 0; }
+      #add-role-panel.show { transform: translateY(0); opacity: 1; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -58,7 +61,7 @@
   <div class="max-w-6xl mx-auto p-6">
     <h1 class="text-xl font-semibold">Gestión de Roles</h1>
     <p class="text-gray-500 text-sm mb-6">Maneja los roles de tu aplicación</p>
-    <a href="/admin/roles/crear"
+    <a id="add-role-btn" href="/admin/roles/crear"
       class="mt-4 inline-block text-center bg-[#5B674D] text-white px-4 py-2 rounded-md hover:bg-[#c6924f] transition flex items-center justify-center gap-2 btn-add">
     
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -168,6 +171,17 @@
           </div>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal agregar rol (carga addRol.php dentro) -->
+  <div id="add-role-modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div id="add-role-panel" class="bg-white rounded-xl w-11/12 max-w-lg p-6 mx-auto shadow-lg transform opacity-0 translate-y-6 transition-all duration-280">
+      <div id="add-role-container">
+        <!-- contenido cargado dinámicamente -->
+        <div class="text-center text-sm text-gray-500">Cargando formulario...</div>
+      </div>
+      <button id="add-role-close" class="absolute top-4 right-6 text-gray-500 hover:text-gray-700">✖</button>
     </div>
   </div>
 
@@ -296,6 +310,98 @@
       } catch (err) {
         // no interrumpir la ejecución por errores de animación
         console.error('Row animation error', err);
+      }
+    })();
+
+    // ---- Modal 'Añadir rol' dynamic loader and animations ----
+    (function(){
+      const addBtn = document.getElementById('add-role-btn');
+      const modal = document.getElementById('add-role-modal');
+      const panel = document.getElementById('add-role-panel');
+      const container = document.getElementById('add-role-container');
+      const closeBtn = document.getElementById('add-role-close');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Si se desea comportamiento de modal, aquí se podría adjuntar listener; actualmente
+      // dejamos el enlace 'Añadir' con su href para que realice la redirección por defecto.
+
+      if (closeBtn) closeBtn.addEventListener('click', closeAddModal);
+      if (modal) modal.addEventListener('click', function(e){ if (e.target === modal) closeAddModal(); });
+
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { if (modal && !modal.classList.contains('hidden')) closeAddModal(); } });
+
+      async function openAddModal(href){
+        modal.classList.remove('hidden');
+        // small delay then show panel with animation
+        panel.classList.remove('show');
+        container.innerHTML = '<div class="text-center text-sm text-gray-500">Cargando formulario...</div>';
+        try {
+          const res = await fetch(href, { credentials: 'include' });
+          const text = await res.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+          // Preferir un wrapper con .max-w-md o el primer <form>
+          let source = doc.querySelector('.max-w-md') || doc.querySelector('form') || doc.body;
+          container.innerHTML = source.innerHTML;
+
+          // enhance: add animated-input to inputs inside modal and add ripples
+          enhanceLoadedForm(container);
+
+          // animate panel in
+          if (reduceMotion) {
+            panel.classList.add('show');
+          } else {
+            // slight timeout to allow CSS transition
+            setTimeout(() => panel.classList.add('show'), 20);
+          }
+        } catch (err) {
+          console.error('Error loading addRol:', err);
+          container.innerHTML = '<div class="text-sm text-red-500">No se pudo cargar el formulario. Intenta recargar la página.</div>';
+          panel.classList.add('show');
+        }
+      }
+
+      function closeAddModal(){
+        panel.classList.remove('show');
+        // wait for animation then hide
+        setTimeout(() => modal.classList.add('hidden'), 260);
+      }
+
+      function enhanceLoadedForm(root){
+        try {
+          // add animated-input class to text inputs
+          root.querySelectorAll('input[type="text"], textarea, select').forEach(el => el.classList.add('animated-input'));
+
+          // add ripple to buttons inside loaded form
+          root.querySelectorAll('button, a').forEach(btn => {
+            if (btn.closest('#add-role-panel')) {
+              btn.style.position = btn.style.position || 'relative';
+              btn.style.overflow = 'hidden';
+              btn.addEventListener('click', function(e){
+                // do ripple
+                if (reduceMotion) return;
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 1.2;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                ripple.style.background = 'rgba(0,0,0,0.06)';
+                btn.appendChild(ripple);
+                if (ripple.animate) {
+                  ripple.animate([{ transform: 'scale(0)', opacity: 0.18 },{ transform: 'scale(1)', opacity: 0 }], { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)' });
+                  setTimeout(() => ripple.remove(), 560);
+                } else {
+                  ripple.style.transition = 'transform 520ms ease, opacity 520ms ease';
+                  ripple.style.transform = 'scale(1)';
+                  ripple.style.opacity = '0';
+                  setTimeout(() => ripple.remove(), 560);
+                }
+              });
+            }
+          });
+        } catch (err) { console.error('Enhance form error', err); }
       }
     })();
 

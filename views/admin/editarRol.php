@@ -26,6 +26,64 @@
             background-color: #e5f3e5;
             border-left: 3px solid #5B674D;
         }
+        /* Animaciones sutiles para inputs y botones */
+        .animated-input {
+            transition: box-shadow 180ms ease, transform 160ms cubic-bezier(.2,.8,.2,1), border-color 160ms ease;
+            will-change: transform, box-shadow;
+        }
+        .animated-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(11,21,12,0.06);
+            border-color: #c6924f;
+            outline: none;
+        }
+
+        .btn-primary {
+            transition: transform 200ms cubic-bezier(.2,.8,.2,1), box-shadow 200ms ease, background-color 160ms ease;
+            will-change: transform, box-shadow;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 34px rgba(11,21,12,0.08);
+        }
+        .btn-primary:active { transform: translateY(-1px) scale(.995); }
+
+        .btn-secondary {
+            transition: transform 180ms cubic-bezier(.2,.8,.2,1), background-color 140ms ease, color 140ms ease, box-shadow 160ms ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(11,21,12,0.04);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animated-input, .btn-primary, .btn-secondary {
+                transition: none !important;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+        }
+        /* JS-driven helpers */
+        .animated-appear { transform: translateY(8px); opacity: 0; }
+        .animated-appear.appear-animate { transform: translateY(0); opacity: 1; transition: transform 320ms cubic-bezier(.2,.8,.2,1), opacity 260ms ease; }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: scale(0);
+            opacity: 0.6;
+            background: rgba(255,255,255,0.7);
+        }
+
+        .pulse {
+            animation: pulseAnim 420ms ease;
+        }
+        @keyframes pulseAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 p-8">
@@ -47,7 +105,7 @@
                     name="roles[nombre]" 
                     value="<?= htmlspecialchars($rol->nombre) ?>"
                     placeholder="Ej: Administrador, Editor"
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c6924f] transition duration-150"
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c6924f] transition duration-150 animated-input"
                 >
                 <?php if(!empty($alertas['nombre'])): ?>
                     <p class="text-red-500 text-xs mt-1"><?php echo $alertas['nombre']; ?></p>
@@ -64,7 +122,7 @@
                     name="roles[descripcion]"
                     value="<?= htmlspecialchars($rol->descripcion) ?>"
                     placeholder="Detalle las responsabilidades del rol"
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c6924f] transition duration-150"
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c6924f] transition duration-150 animated-input"
                 >
                 <?php if(!empty($alertas['descripcion'])): ?>
                     <p class="text-red-500 text-xs mt-1"><?php echo $alertas['descripcion']; ?></p>
@@ -106,11 +164,11 @@
                     type="submit"
                     class="flex-1 py-2 px-4 rounded-lg text-white bg-color-primario 
                            hover:bg-[#4a5440] transition duration-200 font-semibold shadow-md
-                           focus:outline-none focus:ring-4 focus:ring-[#c6924f] focus:ring-opacity-50"
+                           focus:outline-none focus:ring-4 focus:ring-[#c6924f] focus:ring-opacity-50 btn-primary"
                 >
                     <i class="fas fa-save mr-2"></i>Guardar Cambios
                 </button>
-                <a href="/admin/roles" class="flex-1 py-2 px-4 text-center text-[#5B674D] border border-[#5B674D] rounded-lg hover:bg-[#5B674D] hover:text-white transition duration-200">
+                <a href="/admin/roles" class="flex-1 py-2 px-4 text-center text-[#5B674D] border border-[#5B674D] rounded-lg hover:bg-[#5B674D] hover:text-white transition duration-200 btn-secondary">
                     <i class="fas fa-times mr-2"></i>Cancelar
                 </a>
             </div>
@@ -166,6 +224,26 @@
                 }
                 
                 counter.textContent = `Permisos seleccionados: ${selectedCount} de ${totalCount}`;
+                // pulso suave cuando cambia el contador (respetar prefers-reduced-motion)
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!reduceMotion) {
+                    try {
+                        // usar Web Animations si está disponible
+                        if (counter.animate) {
+                            counter.animate([
+                                { transform: 'scale(1)' },
+                                { transform: 'scale(1.06)' },
+                                { transform: 'scale(1)' }
+                            ], { duration: 420, easing: 'ease' });
+                        } else {
+                            counter.classList.add('pulse');
+                            setTimeout(() => counter.classList.remove('pulse'), 420);
+                        }
+                    } catch (err) {
+                        // no hacer nada si falla la animación
+                        console.error('Counter animation error', err);
+                    }
+                }
             }
             
             // Actualizar contador cuando cambien los checkboxes
@@ -175,6 +253,65 @@
             
             // Inicializar contador
             updateCounter();
+            
+            // -------- JS-driven animations: ripple en botones y appear stagger --------
+            (function addJsAnimations(){
+                try {
+                    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                    // Ripple effect for buttons
+                    const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
+                    buttons.forEach(btn => {
+                        // ensure positioning for absolute ripple
+                        btn.style.position = btn.style.position || 'relative';
+                        btn.style.overflow = 'hidden';
+
+                        btn.addEventListener('click', function(e){
+                            if (reduceMotion) return;
+                            const rect = btn.getBoundingClientRect();
+                            const size = Math.max(rect.width, rect.height) * 1.2;
+                            const ripple = document.createElement('span');
+                            ripple.className = 'ripple';
+                            ripple.style.width = ripple.style.height = size + 'px';
+                            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                            ripple.style.background = getComputedStyle(btn).backgroundColor || 'rgba(255,255,255,0.7)';
+                            ripple.style.opacity = 0.18;
+                            btn.appendChild(ripple);
+
+                            if (ripple.animate) {
+                                ripple.animate([
+                                    { transform: 'scale(0)', opacity: 0.18 },
+                                    { transform: 'scale(1)', opacity: 0 }
+                                ], { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)' });
+                                setTimeout(() => ripple.remove(), 560);
+                            } else {
+                                // fallback: simple fade
+                                ripple.style.transition = 'transform 520ms ease, opacity 520ms ease';
+                                ripple.style.transform = 'scale(1)';
+                                ripple.style.opacity = '0';
+                                setTimeout(() => ripple.remove(), 560);
+                            }
+                        });
+                    });
+
+                    // Appear stagger for inputs and permiso items
+                    if (!reduceMotion) {
+                        const appearEls = [];
+                        document.querySelectorAll('.animated-input').forEach(el => appearEls.push(el));
+                        document.querySelectorAll('.permiso-item').forEach(el => appearEls.push(el));
+                        appearEls.forEach((el, i) => {
+                            el.classList.add('animated-appear');
+                            setTimeout(() => el.classList.add('appear-animate'), 60 * i);
+                        });
+                    } else {
+                        // show immediately
+                        document.querySelectorAll('.animated-input, .permiso-item').forEach(el => el.classList.add('appear-animate'));
+                    }
+                } catch (err) {
+                    console.error('JS animations init error', err);
+                }
+            })();
         });
     </script>
 </body>
