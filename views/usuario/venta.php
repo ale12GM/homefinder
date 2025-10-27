@@ -111,10 +111,30 @@ session_start();
     /* Estilos específicos para el buscador */
     #searchForm input, #searchForm select {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      outline: none;
     }
     
     #searchForm input:focus, #searchForm select:focus {
-      box-shadow: 0 0 0 2px #DDA15E, 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      outline: none;
+    }
+    
+    /* Asegurar que el contenedor no corte el borde del focus */
+    #searchForm {
+      padding: 2px;
+    }
+    
+    /* Estilos para los elementos internos del formulario */
+    #searchForm input {
+      border-radius: 20px;
+    }
+    
+    #searchForm select {
+      border-radius: 20px;
+    }
+    
+    #searchForm button {
+      border-radius: 20px;
     }
     
     #searchForm select {
@@ -166,7 +186,7 @@ session_start();
     
     <!-- Buscador (copiado de home.php con ids para mantener funcionalidad JS) -->
     <div class="w-full max-w-4xl mx-auto animate-slide-up stagger-1 mb-6">
-      <form id="searchForm" action="#" method="GET" class="flex items-center rounded-full shadow-lg overflow-hidden animate-scale-hover" style="background-color: #FEFAE0;">
+      <form id="searchForm" action="#" method="GET" class="flex items-center rounded-full shadow-lg animate-scale-hover" style="background-color: #FEFAE0;">
         <!-- Icono lupa + input de búsqueda -->
         <div class="flex items-center flex-1">
           <span class="pl-4 pr-2 text-lg animate-bounce-subtle">
@@ -174,7 +194,7 @@ session_start();
               <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
           </span>
-          <input type="text" id="searchLocation" name="buscar" placeholder="Buscar por ubicación, precio, características..."
+          <input type="text" id="searchLocation" name="buscar" placeholder="Buscar propiedades..."
                  class="flex-1 py-3 focus:outline-none transition-all duration-300 focus:scale-105" style="color: #DDA15E; background-color: #FEFAE0;">
         </div>
 
