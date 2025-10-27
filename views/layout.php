@@ -17,6 +17,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Animación del modal de perfil (suave, no invasiva) */
+      .modal-panel {
+        transform: translateY(12px) scale(0.98);
+        opacity: 0;
+        transition: transform 320ms cubic-bezier(.16,1,.3,1), opacity 260ms ease;
+        will-change: transform, opacity;
+      }
+
+      /* Cuando el overlay tiene la clase de visibilidad (opacity-100), mostramos el panel */
+      .opacity-100 .modal-panel {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .modal-panel { transition: none !important; }
+      }
+    </style>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
 <header class="bg-white border-b border-gray-200"> 
@@ -27,7 +46,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 <!-- Logo -->
 <!-- Logo -->
 <div class="flex items-center">
-  <a href="/" class="flex items-center">
+  <a href="/usuario/home" class="flex items-center">
     <img 
       src="/img/logo.png" 
       alt="Home Finder logo" 
@@ -48,7 +67,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
       <!-- Menú navegación -->
 <nav id="menu" class="hidden md:flex md:items-center md:space-x-8 font-bold text-[#d29057] absolute md:static top-16 left-0 w-full md:w-auto bg-white md:bg-transparent p-6 md:p-0 shadow-md md:shadow-none">
   <ul class="flex flex-col md:flex-row gap-6 md:gap-8">
-    <li><a href="/" class="hover:text-[#a66933]">Inicio</a></li>
+    <li><a href="/usuario/home" class="hover:text-[#a66933]">Inicio</a></li>
     
     <?php if (isset($_SESSION['roles']) && in_array("Administrador", $_SESSION['roles'])): ?>
       <!-- Menú para usuarios normales -->
@@ -143,7 +162,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar'])){
 <!-- Overlay del modal editar perfil -->
 <!-- Overlay del modal editar perfil -->
 <div id="overlayEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ease-in-out">
-  <div id="modalEditar" class="absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50 transform transition-all duration-300 ease-in-out scale-95 opacity-0">
+  <div id="modalEditar" class="modal-panel absolute right-4 top-5 w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-50 transform transition-all duration-300 ease-in-out scale-95 opacity-0">
     
     <!-- Botón cerrar -->
     <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg">✕</button>
