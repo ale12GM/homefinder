@@ -7,7 +7,90 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Poppins', system-ui; }
+    body { 
+      font-family: 'Poppins', system-ui;
+      background-color: #FEFAE0;
+    }
+
+    /* Variables de diseño */
+    :root {
+      --accent: #535E46;
+      --accent-light: #DDA15E;
+    }
+
+    /* Animaciones base */
+    .transition-all {
+      transition: all 200ms ease;
+    }
+
+    /* Animación para filas de tabla */
+    tbody tr {
+      transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+    
+    tbody tr:hover {
+      transform: translateY(-2px);
+      background-color: #fbfbf9;
+      box-shadow: 0 4px 12px rgba(83,94,70,0.06);
+    }
+
+    /* Animaciones para modales */
+    #modal-opciones, #modal-editar {
+      transition: opacity 200ms ease;
+    }
+
+    .modal-content {
+      transform: translateY(8px) scale(0.98);
+      opacity: 0;
+      transition: transform 300ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease;
+    }
+
+    #modal-opciones:not(.hidden) .modal-content,
+    #modal-editar:not(.hidden) .modal-content {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    /* Animaciones para botones */
+    button, .btn {
+      transition: transform 150ms ease, background-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    button:not(:disabled):hover,
+    .btn:not(:disabled):hover {
+      transform: translateY(-1px);
+    }
+
+    button:not(:disabled):active,
+    .btn:not(:disabled):active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* Animación para mensajes de feedback */
+    .feedback-message {
+      animation: slideIn 300ms ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Preferencia de reducción de movimiento */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -26,7 +109,7 @@
       ];
       $mensaje = $mensajes[$_GET['mensaje']] ?? ['text' => 'Operación realizada', 'class' => 'bg-blue-100 text-blue-800'];
       ?>
-      <div class="mb-4 p-3 rounded-lg <?= $mensaje['class'] ?>">
+      <div class="mb-4 p-3 rounded-lg feedback-message <?= $mensaje['class'] ?>">
         <?= $mensaje['text'] ?>
       </div>
     <?php endif; ?>
@@ -93,7 +176,7 @@
   <!-- 🔹 Modales -->
 <!-- Modal opciones de usuario -->
 <div id="modal-opciones" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-  <div class="bg-white rounded-xl w-72 p-5 mx-auto relative shadow-lg border border-[#535E46]/20">
+  <div class="modal-content bg-white rounded-xl w-72 p-5 mx-auto relative shadow-lg border border-[#535E46]/20">
     <button onclick="closeUserModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700">✖</button>
     <h3 class="text-lg font-semibold mb-4 text-[#535E46]">Opciones de Usuario</h3>
 
@@ -119,16 +202,18 @@
 
 
 <!-- Modal editar -->
-<div id="modal-editar" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-  <div class="bg-white rounded-2xl w-11/12 max-w-md p-6 mx-auto relative shadow-xl border border-[#535E46]/20">
-    <!-- Botón cerrar -->
-    <button onclick="closeEditModal()" 
-            class="absolute top-3 right-3 text-gray-400 hover:text-gray-700">
-      ✖
-    </button>
+<div id="modal-editar" class="modal-overlay hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+  <div class="modal-content bg-white rounded-2xl w-11/12 max-w-md p-6 mx-auto relative shadow-xl border border-[#535E46]/20">
+    <div class="modal-header">
+      <!-- Botón cerrar -->
+      <button onclick="closeEditModal()" 
+              class="absolute top-3 right-3 text-gray-400 hover:text-gray-700">
+        ✖
+      </button>
 
-    <!-- Título -->
-    <h3 class="text-xl font-semibold mb-6 text-[#535E46]">Editar Usuario</h3>
+      <!-- Título -->
+      <h3 class="text-xl font-semibold mb-6 text-[#535E46]">Editar Usuario</h3>
+    </div>
 
     <!-- Formulario -->
     <form id="form-editar" method="POST" action="/admin/editar_usuario" class="space-y-5">
