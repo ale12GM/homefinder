@@ -145,7 +145,7 @@ public static function GestionPropiedades(Router $router){
     ]);
 }
 
-public static function MisPropiedades(Router $router) {
+    public static function MisPropiedades(Router $router) {
     if (session_status() === PHP_SESSION_NONE) session_start();
     $usuarioId = $_SESSION['id'] ?? 0;
     $permisosUsuario = $_SESSION['permisos'] ?? [];
@@ -161,6 +161,20 @@ public static function MisPropiedades(Router $router) {
     $propiedadesActivas = array_filter($propiedades, function($p){
         return isset($p['estado']) && $p['estado'] === 'activo';
     });
+
+    // Obtener término de búsqueda
+    $buscar = $_GET['buscar'] ?? '';
+
+    // Si hay término de búsqueda, filtrar las propiedades
+    if (!empty($buscar)) {
+        $buscarLower = strtolower($buscar);
+        $propiedadesActivas = array_filter($propiedadesActivas, function($p) use ($buscarLower) {
+            return 
+                stripos($p['titulo'] ?? '', $buscarLower) !== false ||
+                stripos($p['direccion'] ?? '', $buscarLower) !== false ||
+                stripos($p['descripcion'] ?? '', $buscarLower) !== false;
+        });
+    }
 
     $router->render('usuario/ver_propiedades_propias', [
         'propiedades' => $propiedadesActivas,
